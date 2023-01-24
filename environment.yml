@@ -1,0 +1,11 @@
+name: comp30830
+channels:
+  - defaults
+dependencies:
+  - python
+  - scikit-learn
+  - pandas
+  - numpy
+  - jupyterlab
+  - git
+prefix: F:\Anadonda-OOP\envs\comp30830
