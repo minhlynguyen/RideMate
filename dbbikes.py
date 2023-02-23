@@ -1,4 +1,4 @@
-import sqlalchemy as sqla
+import sqlalchemy
 from sqlalchemy import create_engine
 import traceback
 import glob
@@ -14,7 +14,10 @@ PORT = "3306"
 DB = "dbbikes"
 USER = "minhly"
 PASSWORD = "22201371"
-engine = create_engine("mysql+mysqldb://{}:{}@{}:{}/{}".format(USER,PASSWORD,URI,PORT,DB),echo=True)
-for res in engine.execute("SHOW VARIABLES;"):
-    print(res)
+engine = create_engine("mysql://{}:{}@{}:{}/{}".format(USER,PASSWORD,URI,PORT,DB),echo=True)
 
+sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
+engine.execute(sql)
+
+for res in engine.execute("SHOW VARIABLES"):
+    print(res)
