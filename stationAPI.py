@@ -23,7 +23,7 @@ def write_to_db(text):
 
     for station in stations:
         print(station)
-        # vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands',int(station.get('bonus')),station.get('contract_name'),station.get('name'),get('contract_name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status')),engine.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals))
+        vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands',int(station.get('bonus')),station.get('contract_name'),station.get('name'),get('contract_name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status')),engine.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals))
         break
     return
 
