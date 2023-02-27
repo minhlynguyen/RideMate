@@ -44,3 +44,39 @@ try:
     print(res.fetchall())
 except Exception as e:
     print(e)
+
+sql = """
+CREATE TABLE IF NOT EXISTS availability
+(
+number INTEGER,
+available_bikes INTEGER,
+available_bike_stands INTEGER,
+last_update INTEGER,
+status VARCHAR(256)
+)
+"""
+try:
+    res = engine.execute("DROP TABLE IF EXISTS availability")
+    res = engine.execute(sql)
+    print(res.fetchall())
+except Exception as e:
+    print(e)
+
+sql = """
+CREATE TABLE IF NOT EXISTS weather
+(
+number INTEGER,
+position_lat REAL,
+position_lng REAL,
+weather_condition VARCHAR(256),
+temperature INTEGER,
+participate VARCHAR(256),
+last_update INTEGER
+)
+"""
+try:
+    res = engine.execute("DROP TABLE IF EXISTS weather")
+    res = engine.execute(sql)
+    print(res.fetchall())
+except Exception as e:
+    print(e)
