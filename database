@@ -69,8 +69,8 @@ number INTEGER,
 position_lat REAL,
 position_lng REAL,
 weather_condition VARCHAR(256),
-temperature INTEGER,
-participate VARCHAR(256),
+temperature REAL,
+participate REAL,
 last_update INTEGER
 )
 """
