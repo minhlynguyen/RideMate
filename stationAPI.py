@@ -1,4 +1,5 @@
 #!/user/bin/env/ python
+import sqlalchemy as sqla
 import requests
 import traceback
 import datetime
@@ -12,10 +13,15 @@ NAME="Dublin"
 STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
 
 
-def write_to_file(text):
-    now = datetime.datetime.now()
-    with open("data/bikes_{}".format(now).replace(" ","_"),"w") as f:
-        f.write(r.text)
+metadata = sqla.MetaData()
+
+
+def write_to_file(now,text):
+    # the folder data in the same directory of this py code
+    filename="data/bikes/bikes_{}".format(now).replace(" ","_").replace(":", "-")
+    # now = datetime.datetime.now()
+    with open(filename,"w") as f:
+        f.write(text)
 
 def write_to_db(text):
     stations=json.loads(text)
@@ -35,8 +41,8 @@ def main():
             r=requests.get(STATIONS_URL,params={"apiKey":APIKEY,"contract":NAME})
             # store(json.loads(r.text))
             # print(r,now)
-            write_to_file(r.text)
-            write_to_db(r.text)
+            write_to_file(now,r.text)
+            # write_to_db(r.text)
             # now sleep for 5 minutes
             time.sleep(5)
             # r.encoding='utf-8'
@@ -74,3 +80,26 @@ if __name__=="__main__":
 #     return
 
 # stations_to_db(r.text)
+
+
+
+
+# station = sqla.Table("station", metadata,
+#     sqla.Column('address', sqla.String(256), nullable=False),
+#     sqla.Column('banking', sqla.Integer),
+#     sqla.Column('bike_stands', sqla.Integer),
+#     sqla.Column('bonus', sqla.Integer),
+#     sqla.Column('contract_name', sqla.String(256)),
+#     sqla.Column('name', sqla.String(256)),
+#     sqla.Column('number', sqla.Integer),
+#     sqla.Column('position_lat', sqla.REAL),
+#     sqla.Column('position_lng', sqla.REAL),
+#     sqla.Column('status', sqla.BigInteger)
+# )
+
+# availability = sqla.Table("availability", metadata,
+#     sqla.Column('available_bikes', sqla.Integer),
+#     sqla.Column('available_bike_stands', sqla.Integer),
+#     sqla.Column('number', sqla.Integer),
+#     sqla.Column('last_update', sqla.Integer),
+# )
