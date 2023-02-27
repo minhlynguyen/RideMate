@@ -44,7 +44,7 @@ def main():
             write_to_file(now,r.text)
             # write_to_db(r.text)
             # now sleep for 5 minutes
-            time.sleep(5)
+            time.sleep(5*60)
             # r.encoding='utf-8'
             station=json.loads(r.text)
             # pprint(json.loads(r.text))
@@ -83,23 +83,40 @@ if __name__=="__main__":
 
 
 
+metadata=sqla.MetaData()
+station = sqla.Table("station", metadata,
+    sqla.Column('address', sqla.String(256), nullable=False),
+    sqla.Column('banking', sqla.Integer),
+    sqla.Column('bike_stands', sqla.Integer),
+    sqla.Column('bonus', sqla.Integer),
+    sqla.Column('contrasct_name', sqla.String(256)),
+    sqla.Column('name', sqla.String(256)),
+    sqla.Column('number', sqla.Integer),
+    sqla.Column('position_lat', sqla.REAL),
+    sqla.Column('position_lng', sqla.REAL),
+    sqla.Column('status', sqla.BigInteger)
+)
 
-# station = sqla.Table("station", metadata,
-#     sqla.Column('address', sqla.String(256), nullable=False),
-#     sqla.Column('banking', sqla.Integer),
-#     sqla.Column('bike_stands', sqla.Integer),
-#     sqla.Column('bonus', sqla.Integer),
-#     sqla.Column('contract_name', sqla.String(256)),
-#     sqla.Column('name', sqla.String(256)),
-#     sqla.Column('number', sqla.Integer),
-#     sqla.Column('position_lat', sqla.REAL),
-#     sqla.Column('position_lng', sqla.REAL),
-#     sqla.Column('status', sqla.BigInteger)
-# )
+availability = sqla.Table("availability", metadata,
+    sqla.Column('available_bikes', sqla.Integer),
+    sqla.Column('available_bike_stands', sqla.Integer),
+    sqla.Column('number', sqla.Integer),
+    sqla.Column('last_update', sqla.Integer),
+)
+try:
+    station.drop(engine)
+    availability.drop(engine)
+except:
+    pass
 
-# availability = sqla.Table("availability", metadata,
-#     sqla.Column('available_bikes', sqla.Integer),
-#     sqla.Column('available_bike_stands', sqla.Integer),
-#     sqla.Column('number', sqla.Integer),
-#     sqla.Column('last_update', sqla.Integer),
-# )
+metadata.creat_all(engine)
+
+
+def stations_fix_keys(stations):
+    station['position_lat']=station['position']['lat']
+    station['position_lng']=station['position']['lng']
+    return station
+
+stations=json.loads(open('stations.json','r').read())
+
+engine.execute(station.insert(),*map(availability_fix_keys, stations))
