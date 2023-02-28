@@ -23,8 +23,6 @@ weather_station = {}
 WEATHER_URL="https://api.open-meteo.com/v1/forecast"
 HOURLY="temperature_2m","precipitation_probability","precipitation","weathercode","windspeed_10m"
 
-weather_station = {}
-
 for station in stations:
     LATITUDE = station['position']['lat']
     LONGITUDE = station['position']['lng']
