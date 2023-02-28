@@ -32,3 +32,33 @@ for station in stations:
     weather_station[station['number']]=weather_dict
 
 pprint(weather_station[42])
+
+def write_to_file(now, text):
+    now = datetime.datetime.now()
+    filename = "data/weather_{}".format(now).replace(" ",
+                                                     "_").replace(":", "-")
+    with open(filename, "w") as f:
+        f.write(text)
+
+
+def write_to_db(text):
+    weather_db = json.loads(text)
+    for weather_rep in weather_db:
+        print(weather_rep)
+        break
+    return
+
+
+def main():
+    while True:
+        try:
+            now = datetime.datetime.now()
+            write_to_file(now, weather.text)
+            write_to_db(weather.text)
+            time.sleep(5*60)
+            pprint(json.loads(weather.text))
+        except:
+            print(traceback.format_exc())
+
+        return
+
