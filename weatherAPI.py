@@ -21,14 +21,15 @@ stations=json.loads(r.text)
 weather_station = {}
 
 WEATHER_URL="https://api.open-meteo.com/v1/forecast"
+HOURLY="temperature_2m","precipitation_probability","precipitation","weathercode","windspeed_10m"
+
+weather_station = {}
 
 for station in stations:
     LATITUDE = station['position']['lat']
     LONGITUDE = station['position']['lng']
-    weather=requests.get(WEATHER_URL,params={"latitude":LATITUDE,"longitude":LONGITUDE,"hourly":"temperature_2m","hourly":"precipitation_probability","hourly":"precipitation","hourly":"weathercode","hourly":"windspeed_10m","current_weather":"true","timeformat":"unixtime"})
+    weather=requests.get(WEATHER_URL,params={"latitude":LATITUDE,"longitude":LONGITUDE,"hourly":HOURLY,"current_weather":"true","timeformat":"unixtime"})
     weather_dict=json.loads(weather.text)
-    
-    # Filling the weather_station dictionary:
     weather_station[station['number']]=weather_dict
 
 pprint(weather_station[42])
