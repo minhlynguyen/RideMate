@@ -1,18 +1,18 @@
-import sqlalchemy as sqla
-import traceback
 import datetime
-import time
-import requests
 import json
+import time
+import traceback
 from pprint import pprint
 
-# Getting station data using Station API
-APIKEY="dc37139a1f5e7dbb1220eb237bc420120b3381f4"
-NAME="Dublin"
-STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
+import requests
 
-r=requests.get(STATIONS_URL,params={"apiKey":APIKEY,"contract":NAME})
-stations=json.loads(r.text)
+# Getting station data using Station API
+APIKEY = "dc37139a1f5e7dbb1220eb237bc420120b3381f4"
+NAME = "Dublin"
+STATIONS_URL = "https://api.jcdecaux.com/vls/v1/stations"
+
+r = requests.get(STATIONS_URL, params={"apiKey": APIKEY, "contract": NAME})
+stations = json.loads(r.text)
 
 # From station position getting the weather information there
 
@@ -30,7 +30,6 @@ for station in stations:
     weather_dict=json.loads(weather.text)
     weather_station[station['number']]=weather_dict
 
-pprint(weather_station[42])
 
 def write_to_file(now, text):
     now = datetime.datetime.now()
@@ -52,12 +51,16 @@ def main():
     while True:
         try:
             now = datetime.datetime.now()
-            write_to_file(now, weather.text)
-            write_to_db(weather.text)
-            time.sleep(5*60)
-            pprint(json.loads(weather.text))
+            for key in weather_station:
+                write_to_file(now, weather_station[key].text)
+                write_to_db(weather_station[key].text)
+                # pprint(json.dumps(weather_station[key]))
+            time.sleep(5)
         except:
             print(traceback.format_exc())
 
         return
 
+
+if __name__ == "__main__":
+    main()
