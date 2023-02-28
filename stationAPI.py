@@ -1,4 +1,6 @@
 #!/user/bin/env/ python
+# import sqlalchemy
+from sqlalchemy import create_engine, text
 import sqlalchemy as sqla
 import requests
 import traceback
@@ -13,7 +15,15 @@ NAME="Dublin"
 STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
 
 
-metadata = sqla.MetaData()
+URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
+PORT = "3306"
+DB = "dbbikes"
+USER = "minhly"
+PASSWORD = "22201371"
+engine = create_engine(
+    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
+
+
 
 
 def write_to_file(now,text):
@@ -23,13 +33,15 @@ def write_to_file(now,text):
     with open(filename,"w") as f:
         f.write(text)
 
-def write_to_db(text):
+def stations_to_db(text):
     stations=json.loads(text)
     print(type(stations),len(stations))
 
     for station in stations:
         print(station)
-        vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands',int(station.get('bonus')),station.get('contract_name'),station.get('name'),get('contract_name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status')),engine.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals))
+        vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands'),int(station.get('bonus')),station.get('contract_name'),station.get('name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status'))
+        with engine.connect() as conn:
+            conn.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
         break
     return
 
@@ -41,8 +53,8 @@ def main():
             r=requests.get(STATIONS_URL,params={"apiKey":APIKEY,"contract":NAME})
             # store(json.loads(r.text))
             # print(r,now)
-            write_to_file(now,r.text)
-            # write_to_db(r.text)
+            # write_to_file(now,r.text)
+            stations_to_db(r.text)
             # now sleep for 5 minutes
             time.sleep(5*60)
             # r.encoding='utf-8'
@@ -82,7 +94,7 @@ if __name__=="__main__":
 # stations_to_db(r.text)
 
 
-
+# This code is to create the table:
 # metadata=sqla.MetaData()
 # station = sqla.Table("station", metadata,
 #     sqla.Column('address', sqla.String(256), nullable=False),
@@ -109,7 +121,13 @@ if __name__=="__main__":
 # except:
 #     pass
 
-# metadata.creat_all(engine)
+# metadata.create_all(engine)
+
+# Use this code to load the Tables if you have already created them
+metadata = sqla.MetaData(bind=engine)
+print(metadata)
+station = sqla.Table('station', metadata, autoload=True)
+print(station)
 
 
 # def stations_fix_keys(stations):
