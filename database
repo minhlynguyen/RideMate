@@ -7,7 +7,7 @@ from pprint import pprint
 import simplejson as json
 import requests
 import time
-from IPython.display import display
+# from IPython.display import display
 
 URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
 PORT = "3306"
@@ -15,7 +15,7 @@ DB = "dbbikes"
 USER = "minhly"
 PASSWORD = "22201371"
 engine = create_engine(
-    "mysql://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
+    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
 
 sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
 engine.execute(sql)
@@ -32,10 +32,12 @@ bike_stands INTEGER,
 bonus INTEGER,
 contract_name VARCHAR(256),
 name VARCHAR(256),
-number INTEGER,
+number INTEGER NOT NULL,
 position_lat REAL,
 position_lng REAL,
-status VARCHAR(256)
+status VARCHAR(256),
+last_update INT(11) UNSIGNED NOT NULL,
+PRIMARY KEY (number, last_update)
 )
 """
 try:
@@ -48,11 +50,12 @@ except Exception as e:
 sql = """
 CREATE TABLE IF NOT EXISTS availability
 (
-number INTEGER,
+number INTEGER NOT NULL,
+last_update INT(11) UNSIGNED NOT NULL,
 available_bikes INTEGER,
 available_bike_stands INTEGER,
-last_update INTEGER,
-status VARCHAR(256)
+status VARCHAR(256),
+PRIMARY KEY (number, last_update)
 )
 """
 try:
