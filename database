@@ -66,14 +66,19 @@ sql = """
 CREATE TABLE IF NOT EXISTS weather
 (
 number INTEGER,
-position_lat REAL,
-position_lng REAL,
-weather_condition VARCHAR(256),
+last_update INT(11) UNSIGNED,
 temperature REAL,
-participate REAL,
-last_update INTEGER
+weathercode INTEGER,
+windspeed REAL,
+hourly_time VARCHAR(2100),
+hourly_temp VARCHAR(1100),
+hourly_preci VARCHAR(900),
+hourly_weathercode VARCHAR(700),
+windspeed_10m VARCHAR(1100)
 )
 """
+
+sql 
 try:
     res = engine.execute("DROP TABLE IF EXISTS weather")
     res = engine.execute(sql)

@@ -21,7 +21,7 @@ stations=json.loads(r.text)
 weather_station = {}
 
 WEATHER_URL="https://api.open-meteo.com/v1/forecast"
-HOURLY="temperature_2m","precipitation_probability","precipitation","weathercode","windspeed_10m"
+HOURLY="temperature_2m","precipitation_probability","weathercode","windspeed_10m"
 
 for station in stations:
     LATITUDE = station['position']['lat']
@@ -34,8 +34,7 @@ pprint(weather_station[42])
 
 def write_to_file(now, text):
     now = datetime.datetime.now()
-    filename = "data/weather_{}".format(now).replace(" ",
-                                                     "_").replace(":", "-")
+    filename = "data/weather_{}".format(now).replace(" ","_").replace(":", "-")
     with open(filename, "w") as f:
         f.write(text)
 
