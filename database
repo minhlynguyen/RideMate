@@ -65,16 +65,21 @@ except Exception as e:
 sql = """
 CREATE TABLE IF NOT EXISTS weather
 (
-number INTEGER,
-last_update INT(11) UNSIGNED,
+station INTEGER NOT NULL,
+last_update INT(11) UNSIGNED NOT NULL,
 temperature REAL,
 weathercode INTEGER,
 windspeed REAL,
-hourly_time VARCHAR(2100),
-hourly_temp VARCHAR(1100),
-hourly_preci VARCHAR(900),
-hourly_weathercode VARCHAR(700),
-windspeed_10m VARCHAR(1100)
+hourly_time VARCHAR(150),
+hourly_temp VARCHAR(90),
+hourly_preci VARCHAR(70),
+hourly_weathercode VARCHAR(70),
+hourly_windspeed VARCHAR(90),
+daily_time VARCHAR(90),
+daily_weathercode VARCHAR(40),
+daily_temp_max VARCHAR(60),
+daily_temp_min VARCHAR(60),
+PRIMARY KEY (station, last_update)
 )
 """
 
