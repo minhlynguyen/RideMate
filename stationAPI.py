@@ -47,6 +47,7 @@ def stations_to_db(text):
         break
     return
 
+
 def main():
     # run forever
     while True:
@@ -60,7 +61,7 @@ def main():
             # now sleep for 5 minutes
             time.sleep(5)
             # r.encoding='utf-8'
-            station=json.loads(r.text)
+            station = json.loads(r.text)
             # pprint(json.loads(r.text))
             pprint(station)
             # station_array=[]
@@ -69,7 +70,7 @@ def main():
             # print(station_array)
             # positions=r.json()['position'][0]['lat']
             # pprint(positions)
-            
+
         except:
             # import traceback
             # if there is any problem, print the traceback
@@ -79,7 +80,8 @@ def main():
             # if engine is None:
     return
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
 
 
