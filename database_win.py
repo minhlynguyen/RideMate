@@ -4,7 +4,7 @@ import traceback
 import glob
 import os
 from pprint import pprint
-# import simplejson as json
+import simplejson as json
 import requests
 import time
 # 

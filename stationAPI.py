@@ -1,5 +1,6 @@
 #!/user/bin/env/ python
 # import sqlalchemy
+import config
 from sqlalchemy import create_engine, text
 import sqlalchemy as sqla
 import requests
@@ -10,19 +11,20 @@ import time
 import json
 from pprint import pprint
 
-APIKEY="dc37139a1f5e7dbb1220eb237bc420120b3381f4"
-NAME="Dublin"
-STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
+# APIKEY="dc37139a1f5e7dbb1220eb237bc420120b3381f4"
+# NAME="Dublin"
+# STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
 
 
-URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
-PORT = "3306"
-DB = "dbbikes"
-USER = "minhly"
-PASSWORD = "22201371"
+# URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
+# PORT = "3306"
+# DB = "dbbikes"
+# USER = "minhly"
+# PASSWORD = "22201371"
 engine = create_engine(
-    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
-
+    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+# engine = create_engine(
+#     "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
 
 
 
@@ -50,13 +52,13 @@ def main():
     while True:
         try:
             now = datetime.datetime.now()
-            r=requests.get(STATIONS_URL,params={"apiKey":APIKEY,"contract":NAME})
+            r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
             # store(json.loads(r.text))
             # print(r,now)
             # write_to_file(now,r.text)
             stations_to_db(r.text)
             # now sleep for 5 minutes
-            time.sleep(5*60)
+            time.sleep(5)
             # r.encoding='utf-8'
             station=json.loads(r.text)
             # pprint(json.loads(r.text))
