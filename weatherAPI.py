@@ -1,9 +1,7 @@
-import sqlalchemy as sqla
-import traceback
 import datetime
-import time
-import requests
 import json
+import time
+import traceback
 from pprint import pprint
 from sqlalchemy import create_engine
 import glob
@@ -14,13 +12,15 @@ import requests
 from IPython.display import display
 
 
-# Getting station data using Station API
-APIKEY="dc37139a1f5e7dbb1220eb237bc420120b3381f4"
-NAME="Dublin"
-STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations" 
+import requests
 
-r=requests.get(STATIONS_URL,params={"apiKey":APIKEY,"contract":NAME})
-stations=json.loads(r.text)
+# Getting station data using Station API
+APIKEY = "dc37139a1f5e7dbb1220eb237bc420120b3381f4"
+NAME = "Dublin"
+STATIONS_URL = "https://api.jcdecaux.com/vls/v1/stations"
+
+r = requests.get(STATIONS_URL, params={"apiKey": APIKEY, "contract": NAME})
+stations = json.loads(r.text)
 
 # Connect to RDS
 URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
@@ -95,6 +95,7 @@ def weather_to_db():
 
 weather_to_db()
 
+
 def write_to_file(now, text):
     now = datetime.datetime.now()
     filename = "data/weather_{}".format(now).replace(" ","_").replace(":", "-")
@@ -114,12 +115,16 @@ def main():
     while True:
         try:
             now = datetime.datetime.now()
-            write_to_file(now, weather.text)
-            write_to_db(weather.text)
-            time.sleep(5*60)
-            pprint(json.loads(weather.text))
+            for key in weather_station:
+                write_to_file(now, weather_station[key].text)
+                write_to_db(weather_station[key].text)
+                # pprint(json.dumps(weather_station[key]))
+            time.sleep(5)
         except:
             print(traceback.format_exc())
 
         return
 
+
+if __name__ == "__main__":
+    main()
