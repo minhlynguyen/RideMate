@@ -6,4 +6,4 @@ dependencies:
   - jupyterlab
   - pandas
   - numpy
-prefix: /Users/k/opt/anaconda3/envs/comp30830
+prefix:  F:\Anadonda-OOP\envs\comp30830
