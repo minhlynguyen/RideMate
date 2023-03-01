@@ -9,5 +9,4 @@ PORT = "3306"
 DB = "dbbikes"
 USER = "minhly"
 PASSWORD = "22201371"
-# engine = create_engine(
-#     "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
+ 

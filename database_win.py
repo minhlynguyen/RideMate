@@ -1,3 +1,5 @@
+#!/user/bin/env/ python
+import config
 import sqlalchemy
 from sqlalchemy import create_engine, text
 import traceback
@@ -7,20 +9,11 @@ from pprint import pprint
 import simplejson as json
 import requests
 import time
-# 
-# from IPython.display import display
-# import mysql.connector
-# import ssl
 
-
-URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
-PORT = "3306"
-DB = "dbbikes"
-USER = "minhly"
-PASSWORD = "22201371"
 engine = create_engine(
-    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(USER, PASSWORD, URI, PORT, DB), echo=True)
+    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
 
+# Test the database connection
 def main() :
 #     try:
 #     res = engine.execute("DROP TABLE IF EXISTS station")
