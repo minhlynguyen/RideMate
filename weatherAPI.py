@@ -51,8 +51,8 @@ def main():
         try:
             now = datetime.datetime.now()
             for key in weather_station:
-                write_to_file(now, weather_station[key].text)
-                write_to_db(weather_station[key].text)
+                # write_to_file(now, weather_station[key].text)
+                # write_to_db(weather_station[key].text)
                 # pprint(json.dumps(weather_station[key]))
             time.sleep(5)
         except:

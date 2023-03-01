@@ -27,12 +27,23 @@ def stations_to_db(text):
 
     for station in stations:
         print(station)
-        vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands'),int(station.get('bonus')),station.get('contract_name'),station.get('name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status'))
+        vals=(station.get('address'),int(station.get('banking')),station.get('bike_stands'),int(station.get('bonus')),station.get('contract_name'),station.get('name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status'))
         with engine.connect() as conn:
             conn.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
         break
     return
 
+def stations_to_db_availability(text):
+    stations=json.loads(text)
+    print(type(stations),len(stations))
+
+    for station in stations:
+        print(station)
+        vals=(station.get('number'),station.get('available_bikes'),station.get('available_bike_stands'),station.get('last_update'),station.get('status'))
+        with engine.connect() as conn:
+            conn.execute("insert into availability values(%s,%s,%s,%s,%s)",vals)
+        break
+    return
 
 def main():
     # run forever
@@ -44,18 +55,13 @@ def main():
             # print(r,now)
             # write_to_file(now,r.text)
             stations_to_db(r.text)
+            stations_to_db_availability(r.text)
             # now sleep for 5 minutes
             time.sleep(5)
             # r.encoding='utf-8'
             station = json.loads(r.text)
             # pprint(json.loads(r.text))
             pprint(station)
-            # station_array=[]
-            # for i in range(len(station)):
-            #     station_array.append(station[i]['position'])
-            # print(station_array)
-            # positions=r.json()['position'][0]['lat']
-            # pprint(positions)
 
         except:
             # import traceback
@@ -70,18 +76,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# def stations_to_db(text):
-#     stations=json.loads(text)
-#     print(type(stations),len(stations))
-
-#     for station in stations:
-#         print(station)
-#         # vals=(station.get('address'),int(station.get('banking')),station.get('available_bike_stands',int(station.get('bonus')),station.get('contract_name'),station.get('name'),get('contract_name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status'))
-#         break
-#     return
-
-# stations_to_db(r.text)
 
 
 # This code is to create the table:
