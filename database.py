@@ -105,5 +105,5 @@ def create_table():
     except Exception as e:
         print(e)
 
-# If need to redesign the table, run this function.
+# If need to redesign/delete the table, run this function.
 # create_table()
