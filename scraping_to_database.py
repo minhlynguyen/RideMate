@@ -121,7 +121,8 @@ def main():
 
         except:
             # if there is any problem, print the traceback
-            # traceback.print_exception(*exc_info)print(traceback.format_exc())
+            # traceback.print_exception(*exc_info)
+            print(traceback.format_exc())
 
     return
 
