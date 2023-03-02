@@ -109,10 +109,10 @@ def main():
             # store(json.loads(r.text))
             # print(r,now)
             # write_to_file(now,r.text)
-            stations_to_db(r.text)
-            stations_availability_to_db(r.text)
+            # stations_to_db(r.text)
+            # stations_availability_to_db(r.text)
             pprint(json.loads(r.text))
-            weather_to_db(r.text)
+            # weather_to_db(r.text)
             # now sleep for 5 minutes
             time.sleep(5*60*12)
             # r.encoding='utf-8'
