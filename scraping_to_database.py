@@ -78,7 +78,7 @@ def weather_to_db(text):
         hourly_windspeed = []
         i = hourly_time_full.index(last_update)
 
-        for j in range(i,i+12):
+        for j in range(i,i+24):
             hourly_time.append(hourly_time_full[j])
             hourly_temp.append(weather_station.get(station).get('hourly').get('temperature_2m')[j])
             hourly_preci.append(weather_station.get(station).get('hourly').get('precipitation_probability')[j])
