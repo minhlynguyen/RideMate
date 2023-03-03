@@ -47,7 +47,8 @@ def create_table_station():
     name VARCHAR(256),    
     position_lat REAL,
     position_lng REAL,
-    status VARCHAR(256)
+    status VARCHAR(256),
+    PRIMARY KEY (number)
     )
     """
     try:
@@ -72,7 +73,8 @@ def create_table_availability():
     available_bikes INTEGER,
     available_bike_stands INTEGER,    
     last_update BIGINT,
-    status VARCHAR(256)
+    status VARCHAR(256),
+    PRIMARY KEY (number, last_update)
     )
     """
     try:
@@ -95,7 +97,7 @@ def create_table_weather():
     CREATE TABLE IF NOT EXISTS weather
     (
     station INTEGER NOT NULL,
-    last_update INT(11) UNSIGNED NOT NULL,
+    last_update BIGINT,
     temperature REAL,
     weathercode INTEGER,
     windspeed REAL,
