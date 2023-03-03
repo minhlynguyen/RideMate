@@ -47,8 +47,7 @@ def create_table_station():
     name VARCHAR(256),    
     position_lat REAL,
     position_lng REAL,
-    status VARCHAR(256),
-    PRIMARY KEY (number)
+    status VARCHAR(256)
     )
     """
     try:
@@ -72,9 +71,8 @@ def create_table_availability():
     number INTEGER NOT NULL,
     available_bikes INTEGER,
     available_bike_stands INTEGER,    
-    last_update INTEGER UNSIGNED NOT NULL,
-    status VARCHAR(256),
-    PRIMARY KEY (number, last_update)
+    last_update BIGINT,
+    status VARCHAR(256)
     )
     """
     try:
