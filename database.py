@@ -122,7 +122,7 @@ def create_table_weather():
     except Exception as e:
         print(e)
 
-# If need to redesign/delete the table, run this function.
-create_table_station()
+# If need to redesign/delete the table, run specific function.
+# create_table_station()
 # create_table_availability()
 # create_table_weather()
