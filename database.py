@@ -51,7 +51,8 @@ def create_table():
     position_lng REAL,
     status VARCHAR(256),
     last_update INTEGER UNSIGNED NOT NULL,
-    PRIMARY KEY (number, last_update)
+    db_update INTEGER UNSIGNED NOT NULL
+    PRIMARY KEY (number, last_update, db_update)
     )
     """
     try:
@@ -69,7 +70,8 @@ def create_table():
     available_bike_stands INTEGER,    
     last_update INTEGER UNSIGNED NOT NULL,
     status VARCHAR(256),
-    PRIMARY KEY (number, last_update)
+    db_update INTEGER UNSIGNED NOT NULL,
+    PRIMARY KEY (number, last_update, db_update)
     )
     """
     try:
@@ -82,11 +84,12 @@ def create_table():
     sql = """
     CREATE TABLE IF NOT EXISTS `dbbikes`.`weather_current` (
     `station` INT NOT NULL,
-    `last_update` BIGINT(30) UNSIGNED NOT NULL,
+    `last_update` INT UNSIGNED NOT NULL,
     `temperature` DOUBLE NULL,
     `weathercode` INT NULL,
     `windspeed` DOUBLE NULL,
-    PRIMARY KEY (`station`, `last_update`));
+    db_update INTEGER UNSIGNED NOT NULL
+    PRIMARY KEY (`station`, `last_update`, db_update));
     """
 
     # sql 
@@ -100,8 +103,8 @@ def create_table():
     sql = """
      CREATE TABLE `dbbikes`.`weather_forecast_24h` (
      `station` INT NOT NULL,
-     `last_update` BIGINT(30) UNSIGNED NOT NULL,
-     `forecast_time` BIGINT(30) UNSIGNED NOT NULL,
+     `last_update` INT UNSIGNED NOT NULL,
+     `forecast_time` INT UNSIGNED NOT NULL,
      `temperature` DOUBLE NULL,
      `precipitation` INT NULL,
      `weathercode` INT NULL,
@@ -120,8 +123,8 @@ def create_table():
     sql = """
      CREATE TABLE `dbbikes`.`weather_forecast_7d` (
      `station` INT NOT NULL,
-     `last_update` BIGINT(30) NOT NULL,
-     `forecast_day` BIGINT(30) NOT NULL,
+     `last_update` INT NOT NULL,
+     `forecast_day` INT NOT NULL,
      `weathercode` INT NULL,
      `temperature_max` DOUBLE NULL,
      `temperature_min` DOUBLE NULL,
