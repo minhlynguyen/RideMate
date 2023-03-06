@@ -6,12 +6,8 @@ STATIONS_URL="https://api.jcdecaux.com/vls/v1/stations"
 # WeatherAPI info
 WEATHER_URL="https://api.open-meteo.com/v1/forecast"
 HOURLY="temperature_2m","precipitation_probability","weathercode","windspeed_10m"
-
-WEATHER_URL="https://api.open-meteo.com/v1/forecast"
-HOURLY="temperature_2m","precipitation_probability","weathercode","windspeed_10m"
 TIMEZONE="Europe/London"
 DAILY="weathercode","temperature_2m_max","temperature_2m_min"
-
 
 # database info
 URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
