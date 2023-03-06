@@ -6,12 +6,23 @@ import sqlalchemy as sqla
 import requests
 import traceback
 import datetime
+import datetime
 import time
 import json
 from pprint import pprint
+import glob
+import os
+import simplejson as json
+from IPython.display import display
+import threading
 
-engine = create_engine(
-    "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+
+try:
+    engine = create_engine(
+        "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+except:
+    engine = create_engine(
+        "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
 
 def write_to_file(now,text):
     # the folder data in the same directory of this py code
@@ -22,27 +33,29 @@ def write_to_file(now,text):
 
 def stations_to_db(text):
     stations=json.loads(text)
-    print(type(stations),len(stations))
-
     for station in stations:
-        print(station)
-        vals=(station.get('address'),int(station.get('banking')),station.get('bike_stands'),int(station.get('bonus')),station.get('contract_name'),station.get('name'),station.get('number'),station.get('position').get('lat'),station.get('position').get('lng'),station.get('status'),station.get('last_update'))
-        with engine.connect() as conn:
-            conn.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
-        # break
+        db_update = int(time.time())
+        last_update = int(station.get('last_update')/1000)
+        vals=(station.get('number'),station.get('address'),int(station.get('banking')),
+        station.get('bike_stands'),int(station.get('bonus')),
+        station.get('contract_name'),station.get('name'),
+        station.get('position').get('lat'),
+        station.get('position').get('lng'),station.get('status'),
+        last_update,
+        db_update)
+        engine.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
     return
-
 
 def stations_availability_to_db(text):
     stations=json.loads(text)
-    print(type(stations),len(stations))
-    
     for station in stations:
-        print(station)
-        vals=(station.get('number'),station.get('available_bikes'),station.get('available_bike_stands'),station.get('last_update'),station.get('status'))
-        with engine.connect() as conn:
-            conn.execute("insert into availability values(%s,%s,%s,%s,%s)",vals)
-        # break
+        db_update = int(time.time())
+        last_update = int(station.get('last_update')/1000)
+        vals=(station.get('number'),station.get('available_bikes'),
+        station.get('available_bike_stands'),
+        last_update,station.get('status'),
+        db_update)
+        engine.execute("insert into availability values(%s,%s,%s,%s,%s,%s)",vals)
     return
 
 
@@ -56,65 +69,70 @@ def weather_to_db(text):
         "daily":config.DAILY,"current_weather":"true","timeformat":"unixtime","timezone":config.TIMEZONE})
         weather_dict=json.loads(weather_request.text)
         weather_station[station['number']]=weather_dict
-    print(weather_dict)
+#     print(weather_dict)
     
     # Insert current weather data to database: 
     for station in weather_station:
         last_update = weather_station.get(station).get('current_weather').get('time')
         temperature = weather_station.get(station).get('current_weather').get('temperature')
         weathercode = weather_station.get(station).get('current_weather').get('weathercode')
-        windspeed = weather_station.get(station).get('current_weather').get('windspeed')        
-        vals_current = (station, last_update, temperature, weathercode, windspeed)
-        engine.execute("insert into weather_current values(%s,%s,%s,%s,%s)",vals_current)
-        
-        # Insert weather forecast data for next 24h for each station:        
-        for i in range(0,24):
-            forecast_time = weather_station.get(station).get('hourly').get('time')[i]
-            temperature = weather_station.get(station).get('hourly').get('temperature_2m')[i]
-            precipitation = weather_station.get(station).get('hourly').get('precipitation_probability')[i]
-            weathercode = weather_station.get(station).get('hourly').get('weathercode')[i]
-            windspeed = weather_station.get(station).get('hourly').get('windspeed_10m')[i]
-            vals_hourly = (station, last_update, forecast_time, temperature, precipitation, weathercode, windspeed)
-            engine.execute("insert into weather_forecast_24h values(%s,%s,%s,%s,%s,%s,%s)",vals_hourly)
-    
-        # Insert weather forecast data for next 7 days for each station:
-        for j in range(0,7):
-            last_update = weather_station.get(station).get('current_weather').get('time')
-            forecast_day = weather_station.get(station).get('daily').get('time')[j]
-            weathercode = weather_station.get(station).get('daily').get('weathercode')[j]
-            temperature_max = weather_station.get(station).get('daily').get('temperature_2m_max')[j]
-            temperature_min = weather_station.get(station).get('daily').get('temperature_2m_min')[j]
-            vals_daily = (station, last_update, forecast_day, weathercode, temperature_max, temperature_min)
-            engine.execute("insert into weather_forecast_7d values(%s,%s,%s,%s,%s,%s)",vals_daily)
-#         break
+        windspeed = weather_station.get(station).get('current_weather').get('windspeed')    
+        db_update = int(time.time())
+        vals_current = (station, last_update, temperature, weathercode, windspeed, db_update)
+        engine.execute("insert into weather_current values(%s,%s,%s,%s,%s,%s)",vals_current)
     return
 
-def main():
-    # run forever
+def every_five_min():
     while True:
         try:
             now = datetime.datetime.now()
+            print(now)
             r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
-            # store(json.loads(r.text))
-            # print(r,now)
-            # write_to_file(now,r.text)
-            stations_to_db(r.text)
             stations_availability_to_db(r.text)
-            pprint(json.loads(r.text))
-            weather_to_db(r.text)
-            # now sleep for 5 minutes
-            time.sleep(5*60*12)
-            # r.encoding='utf-8'
-            # pprint(json.loads(r.text))
-            
+        # Stop for 5 minute
+            time.sleep(5*60)
+        except:
+            # if there is any problem, print the traceback
+#             traceback.print_exception(*exc_info)
+            print(traceback.format_exc())
+    return
 
+def every_hour():
+    while True:
+        try: 
+            r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
+            weather_to_db(r.text)
+            # Stop for 60 minutes
+            time.sleep(60*60)
         except:
             # if there is any problem, print the traceback
             # traceback.print_exception(*exc_info)
             print(traceback.format_exc())
-
     return
 
+def every_day():
+    while True:
+        try: 
+            now = datetime.datetime.now()
+            r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
+            stations_to_db(r.text)
+            # stop for 1 day
+            time.sleep(24*60*60)
+        except:
+        # if there is any problem, print the traceback
+        # traceback.print_exception(*exc_info)
+            print(traceback.format_exc())
+    return
+
+def main():
+    thread1 = threading.Thread(target=every_five_min)
+    thread1.start()
+
+    thread2 = threading.Thread(target=every_hour)
+    thread2.start()
+
+    thread3 = threading.Thread(target=every_day)
+    thread3.start()
 
 if __name__ == "__main__":
     main()
