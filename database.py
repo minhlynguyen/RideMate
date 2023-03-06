@@ -16,7 +16,6 @@ except Exception:
     engine = create_engine(
         "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
 
-
 # Test the database connection
 def main() :
     try:
@@ -135,5 +134,5 @@ def create_table():
     except Exception as e:
         print(e)
 
-# If need to redesign the table, run this function.
+# If need to redesign/delete the table, run this function.
 # create_table()
