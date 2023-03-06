@@ -30,7 +30,7 @@ if __name__ == '__main__':
     main()
 
 
-def create_table():    
+def create_table_station():    
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     engine.execute(sql)
 
@@ -40,13 +40,13 @@ def create_table():
     sql = """
     CREATE TABLE IF NOT EXISTS station
     (
+    number INTEGER NOT NULL,
     address VARCHAR(256),
     banking INTEGER,
     bike_stands INTEGER,
     bonus INTEGER,
     contract_name VARCHAR(256),
-    name VARCHAR(256),
-    number INTEGER NOT NULL,
+    name VARCHAR(256),    
     position_lat REAL,
     position_lng REAL,
     status VARCHAR(256),
@@ -62,13 +62,21 @@ def create_table():
     except Exception as e:
         print(e)
 
+
+def create_table_availability():  
+    sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
+    engine.execute(sql)
+
+    for res in engine.execute("SHOW VARIABLES"):
+        print(res)
+       
     sql = """
     CREATE TABLE IF NOT EXISTS availability
     (
     number INTEGER NOT NULL,
     available_bikes INTEGER,
     available_bike_stands INTEGER,    
-    last_update INTEGER UNSIGNED NOT NULL,
+    last_update BIGINT,
     status VARCHAR(256),
     db_update INTEGER UNSIGNED NOT NULL,
     PRIMARY KEY (number, last_update, db_update)
@@ -81,6 +89,15 @@ def create_table():
     except Exception as e:
         print(e)
 
+
+
+def create_table_weather():   
+    sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
+    engine.execute(sql)
+
+    for res in engine.execute("SHOW VARIABLES"):
+        print(res)
+      
     sql = """
     CREATE TABLE IF NOT EXISTS `dbbikes`.`weather_current` (
     `station` INT NOT NULL,
@@ -137,5 +154,8 @@ def create_table():
     except Exception as e:
         print(e)
 
-# If need to redesign/delete the table, run this function.
-# create_table()
+# If need to redesign/delete the table, run specific function.
+# create_table_station()
+# create_table_availability()
+# create_table_weather()
+

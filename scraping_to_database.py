@@ -17,6 +17,7 @@ from IPython.display import display
 import threading
 
 
+
 try:
     engine = create_engine(
         "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
@@ -31,7 +32,7 @@ def write_to_file(now,text):
     with open(filename,"w") as f:
         f.write(text)
 
-def stations_to_db(text):
+def stations_to_db(text):    
     stations=json.loads(text)
     for station in stations:
         db_update = int(time.time())
@@ -47,6 +48,9 @@ def stations_to_db(text):
     return
 
 def stations_availability_to_db(text):
+    r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
+    
+    # while True:
     stations=json.loads(text)
     for station in stations:
         db_update = int(time.time())
@@ -84,16 +88,15 @@ def weather_to_db(text):
 
 def every_five_min():
     while True:
+        # Scrape the station static data everyday, update the duplicate rows in database
         try:
-            now = datetime.datetime.now()
-            print(now)
             r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
             stations_availability_to_db(r.text)
         # Stop for 5 minute
             time.sleep(5*60)
         except:
             # if there is any problem, print the traceback
-#             traceback.print_exception(*exc_info)
+            # traceback.print_exception(*exc_info)
             print(traceback.format_exc())
     return
 
@@ -106,14 +109,12 @@ def every_hour():
             time.sleep(60*60)
         except:
             # if there is any problem, print the traceback
-            # traceback.print_exception(*exc_info)
             print(traceback.format_exc())
     return
 
 def every_day():
     while True:
         try: 
-            now = datetime.datetime.now()
             r=requests.get(config.STATIONS_URL,params={"apiKey":config.APIKEY,"contract":config.NAME})
             stations_to_db(r.text)
             # stop for 1 day
@@ -123,6 +124,7 @@ def every_day():
         # traceback.print_exception(*exc_info)
             print(traceback.format_exc())
     return
+
 
 def main():
     thread1 = threading.Thread(target=every_five_min)
