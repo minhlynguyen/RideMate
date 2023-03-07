@@ -6,14 +6,10 @@ import sqlalchemy as sqla
 import requests
 import traceback
 import datetime
-import datetime
 import time
 import json
 from pprint import pprint
-import glob
-import os
 import simplejson as json
-from IPython.display import display
 import threading
 
 
@@ -35,16 +31,17 @@ def write_to_file(now,text):
 def stations_to_db(text):    
     stations=json.loads(text)
     for station in stations:
-        db_update = int(time.time())
-        last_update = int(station.get('last_update')/1000)
+        # db_update = int(time.time())
+        # last_update = int(station.get('last_update')/1000)
         vals=(station.get('number'),station.get('address'),int(station.get('banking')),
         station.get('bike_stands'),int(station.get('bonus')),
         station.get('contract_name'),station.get('name'),
         station.get('position').get('lat'),
-        station.get('position').get('lng'),station.get('status'),
-        last_update,
-        db_update)
-        engine.execute("insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",vals)
+        station.get('position').get('lng'),station.get('status'),station.get('number'))
+        engine.execute("""insert into station values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                       ON DUPLICATE KEY UPDATE
+                       number=%s
+                       """,vals)
     return
 
 def stations_availability_to_db(text):
@@ -53,13 +50,15 @@ def stations_availability_to_db(text):
     # while True:
     stations=json.loads(text)
     for station in stations:
-        db_update = int(time.time())
         last_update = int(station.get('last_update')/1000)
         vals=(station.get('number'),station.get('available_bikes'),
         station.get('available_bike_stands'),
-        last_update,station.get('status'),
-        db_update)
-        engine.execute("insert into availability values(%s,%s,%s,%s,%s,%s)",vals)
+        last_update,station.get('status'),station.get('number'),last_update)
+        engine.execute("""insert into availability values(%s,%s,%s,%s,%s)
+                       ON DUPLICATE KEY UPDATE
+                       number=%s,
+                       last_update=%s
+                       """,vals)
     return
 
 
@@ -81,9 +80,11 @@ def weather_to_db(text):
         temperature = weather_station.get(station).get('current_weather').get('temperature')
         weathercode = weather_station.get(station).get('current_weather').get('weathercode')
         windspeed = weather_station.get(station).get('current_weather').get('windspeed')    
-        db_update = int(time.time())
-        vals_current = (station, last_update, temperature, weathercode, windspeed, db_update)
-        engine.execute("insert into weather_current values(%s,%s,%s,%s,%s,%s)",vals_current)
+        vals_current = (station, last_update, temperature, weathercode, windspeed, station, last_update)
+        engine.execute("""insert into weather_current values(%s,%s,%s,%s,%s)
+                       ON DUPLICATE KEY UPDATE
+                       station=%s,
+                       last_update=%s""",vals_current)
     return
 
 def every_five_min():
