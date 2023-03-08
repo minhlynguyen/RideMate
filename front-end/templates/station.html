@@ -10,7 +10,17 @@
 </head>
 
 <body>
-    <h1>Station</h1>
+    {% block content %}
+    <h1>Station</h1>{% extends 'home.html' %}
+    <table border=1>
+        {% for key, value in station.items() %}
+        <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endblock %}
 </body>
 
 </html>
