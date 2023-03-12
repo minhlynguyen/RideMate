@@ -1,3 +1,4 @@
+import mysql.connector
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -11,9 +12,16 @@ def home_page():
 
 @app.route('/station')
 def station_page():
-    return render_template('station.html')
+    db = mysql.connector.connect(host="dbbikes.cbqpbir87k5q.eu-west-1.rds.amazonaws.com",
+                                 user="fei", passwd="22200125", db="dbbikes", port=3306)
+    cur = db.cursor()
+
+    sql = ("""SELECT * FROM station""")
+
+    cur.execute(sql)
+    results = cur.fetchall()
+    db.close()
+    return render_template('station.html', station=results)
 
 
-@app.route('/about/<username>')
-def about_page(username):
-    return f'<h1>this is the about page of {username}</h1>'
+app.run()
