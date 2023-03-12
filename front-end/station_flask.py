@@ -24,4 +24,12 @@ def station_page():
     return render_template('station.html', station=results)
 
 
-app.run()
+# Replace YOUR_API_KEY with your actual Google Maps API key
+GOOGLE_MAPS_API_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
+
+@app.route('/')
+def index():
+    return render_template('home.html', api_key=GOOGLE_MAPS_API_KEY)
+
+if __name__ == '__main__':
+    app.run(debug=True)
