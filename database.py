@@ -1,42 +1,36 @@
+import config
+from sqlalchemy import create_engine,text
+import traceback
 import glob
 import os
-import time
-import traceback
 from pprint import pprint
-
-import requests
 import simplejson as json
-from sqlalchemy import create_engine, text
-
-import config
-
+import requests
+import time
 # from IPython.display import display
 
 try:
     engine = create_engine(
         "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
-except Exception:
+except:
     engine = create_engine(
         "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
 
 # Test the database connection
-
-
-def main():
+def main() :
     try:
         with engine.connect() as conn:
             res = conn.execute(text("SHOW VARIABLES"))
             print(list(res))
     except:
         print(traceback.format_exc())
-    return
-
+    return 
 
 if __name__ == '__main__':
     main()
 
 
-def create_table_station():
+def create_table_station():    
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     engine.execute(sql)
 
@@ -56,9 +50,7 @@ def create_table_station():
     position_lat REAL,
     position_lng REAL,
     status VARCHAR(256),
-    last_update INTEGER UNSIGNED NOT NULL,
-    db_update INTEGER UNSIGNED NOT NULL,
-    PRIMARY KEY (number, last_update, db_update)
+    PRIMARY KEY (number)
     )
     """
     try:
@@ -69,13 +61,13 @@ def create_table_station():
         print(e)
 
 
-def create_table_availability():
+def create_table_availability():  
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     engine.execute(sql)
 
     for res in engine.execute("SHOW VARIABLES"):
         print(res)
-
+       
     sql = """
     CREATE TABLE IF NOT EXISTS availability
     (
@@ -84,8 +76,7 @@ def create_table_availability():
     available_bike_stands INTEGER,    
     last_update BIGINT,
     status VARCHAR(256),
-    db_update INTEGER UNSIGNED NOT NULL,
-    PRIMARY KEY (number, last_update, db_update)
+    PRIMARY KEY (number, last_update)
     )
     """
     try:
@@ -96,13 +87,14 @@ def create_table_availability():
         print(e)
 
 
-def create_table_weather():
+
+def create_table_weather():   
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     engine.execute(sql)
 
     for res in engine.execute("SHOW VARIABLES"):
         print(res)
-
+      
     sql = """
     CREATE TABLE IF NOT EXISTS `dbbikes`.`weather_current` (
     `station` INT NOT NULL,
@@ -110,11 +102,11 @@ def create_table_weather():
     `temperature` DOUBLE NULL,
     `weathercode` INT NULL,
     `windspeed` DOUBLE NULL,
-    db_update INTEGER UNSIGNED NOT NULL
-    PRIMARY KEY (`station`, `last_update`, db_update));
+    PRIMARY KEY (`station`, `last_update`)
+    );
     """
 
-    # sql
+    # sql 
     try:
         res = engine.execute("DROP TABLE IF EXISTS weather_current")
         res = engine.execute(sql)
@@ -131,10 +123,11 @@ def create_table_weather():
      `precipitation` INT NULL,
      `weathercode` INT NULL,
      `windspeed` DOUBLE NULL,
-     PRIMARY KEY (`station`, `last_update`, `forecast_time`));
+     PRIMARY KEY (`station`, `last_update`, `forecast_time`)
+     );
      """
 
-    # sql
+    # sql 
     try:
         res = engine.execute("DROP TABLE IF EXISTS weather_forecast_24h")
         res = engine.execute(sql)
@@ -150,7 +143,8 @@ def create_table_weather():
      `weathercode` INT NULL,
      `temperature_max` DOUBLE NULL,
      `temperature_min` DOUBLE NULL,
-     PRIMARY KEY (`station`, `last_update`, `forecast_day`));"""
+     PRIMARY KEY (`station`, `last_update`, `forecast_day`)
+     );"""
 
     try:
         res = engine.execute("DROP TABLE IF EXISTS weather_forecast_7d")
@@ -159,8 +153,8 @@ def create_table_weather():
     except Exception as e:
         print(e)
 
-
 # If need to redesign/delete the table, run specific function.
-create_table_station()
-create_table_availability()
-create_table_weather()
+# create_table_station()
+# create_table_availability()
+# create_table_weather()
+
