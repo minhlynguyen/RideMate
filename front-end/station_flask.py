@@ -9,7 +9,6 @@ import json
 
 app = Flask(__name__)
 
-
 @app.route('/')
 
 @app.route('/home')
@@ -29,7 +28,6 @@ def station_page():
     results = cur.fetchall()
     db.close()
     return render_template('station.html', station=results)
-
 
 # Replace YOUR_API_KEY with your actual Google Maps API key
 GOOGLE_MAPS_API_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
