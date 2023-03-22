@@ -5,8 +5,10 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Station Page</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="RIDEMATE/static/index.js"></script>
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
 </head>
 
 <body>
@@ -21,6 +23,9 @@
         {% endfor %}
     </table>
     {% endblock %}
+    <div id="cw"></div>
+    <div id="map"></div>
+
 </body>
 
 </html>
