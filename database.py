@@ -12,7 +12,7 @@ import time
 try:
     engine = create_engine(
         "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
-except Exception:
+except:
     engine = create_engine(
         "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
 
@@ -50,9 +50,7 @@ def create_table_station():
     position_lat REAL,
     position_lng REAL,
     status VARCHAR(256),
-    last_update INTEGER UNSIGNED NOT NULL,
-    db_update INTEGER UNSIGNED NOT NULL
-    PRIMARY KEY (number, last_update, db_update)
+    PRIMARY KEY (number)
     )
     """
     try:
@@ -78,8 +76,7 @@ def create_table_availability():
     available_bike_stands INTEGER,    
     last_update BIGINT,
     status VARCHAR(256),
-    db_update INTEGER UNSIGNED NOT NULL,
-    PRIMARY KEY (number, last_update, db_update)
+    PRIMARY KEY (number, last_update)
     )
     """
     try:
@@ -105,8 +102,8 @@ def create_table_weather():
     `temperature` DOUBLE NULL,
     `weathercode` INT NULL,
     `windspeed` DOUBLE NULL,
-    db_update INTEGER UNSIGNED NOT NULL
-    PRIMARY KEY (`station`, `last_update`, db_update));
+    PRIMARY KEY (`station`, `last_update`)
+    );
     """
 
     # sql 
@@ -126,7 +123,8 @@ def create_table_weather():
      `precipitation` INT NULL,
      `weathercode` INT NULL,
      `windspeed` DOUBLE NULL,
-     PRIMARY KEY (`station`, `last_update`, `forecast_time`));
+     PRIMARY KEY (`station`, `last_update`, `forecast_time`)
+     );
      """
 
     # sql 
@@ -145,7 +143,8 @@ def create_table_weather():
      `weathercode` INT NULL,
      `temperature_max` DOUBLE NULL,
      `temperature_min` DOUBLE NULL,
-     PRIMARY KEY (`station`, `last_update`, `forecast_day`));"""
+     PRIMARY KEY (`station`, `last_update`, `forecast_day`)
+     );"""
 
     try:
         res = engine.execute("DROP TABLE IF EXISTS weather_forecast_7d")

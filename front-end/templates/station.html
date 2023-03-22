@@ -10,28 +10,17 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <a class="navbar-brand" href="#">RideMate</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Station</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Register</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <h1>Station Page</h1>
+    {% block content %}
+    <h1>Station</h1>{% extends 'home.html' %}
+    <table border=1>
+        {% for key, value in station.items() %}
+        <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endblock %}
 </body>
 
 </html>
