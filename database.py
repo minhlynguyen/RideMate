@@ -57,8 +57,8 @@ def create_table_station():
     )
     """
     try:
-        res = engine.execute("DROP TABLE IF EXISTS station")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS station")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
@@ -77,7 +77,7 @@ def create_table_availability():
     number INTEGER NOT NULL,
     available_bikes INTEGER,
     available_bike_stands INTEGER,    
-    last_update BIGINT,
+    last_update INT UNSIGNED NOT NULL,
     status VARCHAR(256),
     PRIMARY KEY (number, last_update)
     )
