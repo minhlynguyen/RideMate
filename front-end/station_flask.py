@@ -26,19 +26,6 @@ def get_db():
 #     if db is not None:
 #         db.close()
 
-# From lecture note, isn't working
-# @app.route("/available/<int:station_id>")
-# def get_station():
-#     engine = get_db()
-#     data = []
-#     rows = engine.execute("SELECT available_bikes from stations where number = {};".format(station_id))
-#     for row in rows:
-#         data.append(dict(row))
-#     return jsonify(available=data)
-
-# def new_func():
-#     return station_id
-
 @app.route('/')
 
 @app.route('/home')
@@ -75,9 +62,23 @@ def get_stations():
 # Replace YOUR_API_KEY with your actual Google Maps API key
 GOOGLE_MAPS_API_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
 
-@app.route('/station/<int:station_id>')
-def station(station_id):
-    return f'Retrieving info for Station: {station_id}'.format(station_id)
+# Dont need this anymore because the following one already retrieve information from database
+# @app.route('/station/<int:station_id>')
+# def station(station_id):
+#     return f'Retrieving info for Station: {station_id}'.format(station_id)
+
+# From lecture note, working now. It's showing info of a station
+@app.route("/available/<int:station_id>")
+def get_station(station_id):
+    engine = get_db()
+    data = []
+    rows = engine.execute("SELECT * from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
+    for row in rows:
+        data.append(dict(row))
+    return jsonify(available=data)
+
+# def new_func():
+#     return station_id
 
 @app.route('/weather')
 def weather():    
@@ -85,8 +86,10 @@ def weather():
     LONGITUDE = -6.262501
     r = requests.get(config.WEATHER_URL,params={"latitude":53.340927,"longitude":-6.262501,"hourly":config.HOURLY,
     "daily":config.DAILY,"current_weather":"true","timeformat":"unixtime","timezone":config.TIMEZONE})
-    weather = json.loads(r.text)
-    return f'Weather information: {weather}'.format(weather)
+    r_text = json.loads(r.text)
+    weather = jsonify(available=r_text)
+    return weather
+    # return f'Weather information: {weather}'.format(weather)
 
 @app.route('/')
 def index():
@@ -94,7 +97,6 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # app.run(host='0.0.0.0', port=4444, debug=True)
 
 # Testing decorators:
 def build_regression_model(**kwargs):
