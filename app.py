@@ -2,7 +2,6 @@
 from sqlalchemy import create_engine, text
 from flask import Flask, g, render_template, jsonify
 import sys
-sys.path.append('/Users/minhlynguyen/Documents/software-engineering/git/ridemate/RideMate')
 import config
 import time
 import requests
