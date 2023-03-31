@@ -9,17 +9,20 @@ import requests
 import time
 # from IPython.display import display
 
-try:
-    engine = create_engine(
-        "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
-except:
-    engine = create_engine(
-        "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+def connect_to_database():
+    try:
+        engine = create_engine(
+            "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+        return engine
+    except:
+        engine = create_engine(
+            "mysql://{}:{}@{}:{}/{}".format(config.USER, config.PASSWORD, config.URI, config.PORT, config.DB), echo=True)
+        return engine
 
 # Test the database connection
 def main() :
     try:
-        with engine.connect() as conn:
+        with connect_to_database().connect() as conn:
             res = conn.execute(text("SHOW VARIABLES"))
             print(list(res))
     except:
@@ -32,9 +35,9 @@ if __name__ == '__main__':
 
 def create_table_station():    
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
-    engine.execute(sql)
+    connect_to_database().execute(sql)
 
-    for res in engine.execute("SHOW VARIABLES"):
+    for res in connect_to_database().execute("SHOW VARIABLES"):
         print(res)
 
     sql = """
@@ -54,8 +57,8 @@ def create_table_station():
     )
     """
     try:
-        res = engine.execute("DROP TABLE IF EXISTS station")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS station")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
@@ -63,9 +66,9 @@ def create_table_station():
 
 def create_table_availability():  
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
-    engine.execute(sql)
+    connect_to_database().execute(sql)
 
-    for res in engine.execute("SHOW VARIABLES"):
+    for res in connect_to_database().execute("SHOW VARIABLES"):
         print(res)
        
     sql = """
@@ -74,14 +77,14 @@ def create_table_availability():
     number INTEGER NOT NULL,
     available_bikes INTEGER,
     available_bike_stands INTEGER,    
-    last_update BIGINT,
+    last_update INT UNSIGNED NOT NULL,
     status VARCHAR(256),
     PRIMARY KEY (number, last_update)
     )
     """
     try:
-        res = engine.execute("DROP TABLE IF EXISTS availability")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS availability")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
@@ -90,9 +93,9 @@ def create_table_availability():
 
 def create_table_weather():   
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
-    engine.execute(sql)
+    connect_to_database().execute(sql)
 
-    for res in engine.execute("SHOW VARIABLES"):
+    for res in connect_to_database().execute("SHOW VARIABLES"):
         print(res)
       
     sql = """
@@ -108,8 +111,8 @@ def create_table_weather():
 
     # sql 
     try:
-        res = engine.execute("DROP TABLE IF EXISTS weather_current")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS weather_current")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
@@ -129,8 +132,8 @@ def create_table_weather():
 
     # sql 
     try:
-        res = engine.execute("DROP TABLE IF EXISTS weather_forecast_24h")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS weather_forecast_24h")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
@@ -147,8 +150,8 @@ def create_table_weather():
      );"""
 
     try:
-        res = engine.execute("DROP TABLE IF EXISTS weather_forecast_7d")
-        res = engine.execute(sql)
+        res = connect_to_database().execute("DROP TABLE IF EXISTS weather_forecast_7d")
+        res = connect_to_database().execute(sql)
         print(res.fetchall())
     except Exception as e:
         print(e)
