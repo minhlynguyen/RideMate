@@ -67,7 +67,7 @@ GOOGLE_MAPS_API_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
 # def station(station_id):
 #     return f'Retrieving info for Station: {station_id}'.format(station_id)
 
-# From lecture note, working now. It's showing info of a station
+# From lecture note, working now. It's showing info of 1 station defined in the link
 @app.route("/available/<int:station_id>")
 def get_station(station_id):
     engine = get_db()
@@ -80,10 +80,23 @@ def get_station(station_id):
 # def new_func():
 #     return station_id
 
+# Function to get the longitude of the chosen station
+@app.route("/available/<int:station_id>")
+def get_lng(station_id):
+    engine = get_db()
+    lng = engine.execute("SELECT position_lng from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
+    return lng
+
+@app.route("/available/<int:station_id>")
+def get_lat(station_id):
+    engine = get_db()
+    lat = engine.execute("SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
+    return lat
+
 @app.route('/weather')
-def weather():    
-    LATITUDE = 53.340927
-    LONGITUDE = -6.262501
+def weather(): 
+    LATITUDE = get_lat
+    LONGITUDE = get_lng
     r = requests.get(config.WEATHER_URL,params={"latitude":53.340927,"longitude":-6.262501,"hourly":config.HOURLY,
     "daily":config.DAILY,"current_weather":"true","timeformat":"unixtime","timezone":config.TIMEZONE})
     r_text = json.loads(r.text)
