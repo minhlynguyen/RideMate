@@ -129,5 +129,3 @@ def timeit(method):
         result = method(*args,**kw)
         end = time.time()
         print("")
-
-
