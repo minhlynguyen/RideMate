@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Google Map Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"></script>
+    <script>
+        function initMap() {
+            var dublin = { lat: 53.3498, lng: -6.2603 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: dublin
+            });
+            var marker = new google.maps.Marker({
+                position: dublin,
+                map: map
+            });
+        }
+    </script>
+</head>
+
+<body onload="initMap()">
+    <div id="map" style="height: 500px;"></div>
+</body>
+
+</html>

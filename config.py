@@ -10,8 +10,8 @@ TIMEZONE = "Europe/London"
 DAILY = "weathercode", "temperature_2m_max", "temperature_2m_min"
 
 # database info
-URI = "dbbikes.cbqpbir87k5q.eu-west-1.rds.amazonaws.com"
+URI = "dbbikes.c06rsktpo8sk.us-east-1.rds.amazonaws.com"
 PORT = "3306"
 DB = "dbbikes"
-USER = "fei"
-PASSWORD = "22200125"
+USER = "minhly"
+PASSWORD = "22201371"

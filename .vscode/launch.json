@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "google_map.py",
+                "FLASK_APP": "map.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
