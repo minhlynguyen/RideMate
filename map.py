@@ -89,6 +89,8 @@ def index():
         marker = {
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
+            'status': station[9],
+            'bike_stands': station[3]
         }
         markers.append(marker)
 
