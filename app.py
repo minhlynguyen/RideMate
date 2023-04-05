@@ -1,6 +1,6 @@
 # import mysql.connector
 from sqlalchemy import text
-from flask import Flask, g, render_template, jsonify
+from flask import Flask, g, render_template, jsonify, request
 import config
 import time
 import requests
@@ -8,8 +8,12 @@ import json
 import functools
 import traceback
 import database
+import googlemaps
+from flask_googlemaps import GoogleMaps, Map
 
 app = Flask(__name__)
+GoogleMaps(app, key=config.MAP_KEY)
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -25,10 +29,56 @@ def get_db():
 #         db.close()
 
 @app.route('/')
+def index():
+    # Set up the Google Maps client
+    gmaps = googlemaps.Client(config.MAP_KEY)
 
-@app.route('/home')
-def home_page():
-    return render_template('home.html')
+    # Search for a location in Dublin
+    address = "Dublin, Ireland"
+    geocode_result = gmaps.geocode(address)
+
+    # Get the latitude and longitude of the location
+    lat = geocode_result[0]["geometry"]["location"]["lat"]
+    lng = geocode_result[0]["geometry"]["location"]["lng"]
+
+    # Set up the map options
+    map_options = {
+        "center": {"lat": lat, "lng": lng},
+        "zoom": 15
+    }
+
+    # Fetch the station data from the MySQL database
+    query = 'SELECT * FROM station'
+    engine = get_db()
+    station_data = engine.connect().execute(text(query)).fetchall()
+
+    # Set up the markers
+    markers = []
+    for station in station_data:
+        marker = {
+            'position': {'lat': station[7], 'lng': station[8]},
+            'title': station[6],
+            'status': station[9],
+            'bike_stands': station[3]
+        }
+        markers.append(marker)
+
+    # Render the template with the map options, API key, and markers
+    return render_template("map.html", map_options=map_options, api_key=config.MAP_KEY, markers=markers)
+
+@app.route('/data')
+def station_data():
+    engine = get_db()
+    query = 'SELECT * FROM station'
+    data = engine.connect().execute(text(query)).fetchall()
+    query = request.args.get('query')
+    filter_criteria = request.args.get('filter')
+    if query and filter_criteria:
+        query = f"SELECT * FROM station WHERE {filter_criteria} LIKE '%{query}%'"
+        search_results = engine.connect().execute(text(query)).fetchall()
+        return render_template('data.html', data=data, search_results=search_results)
+    else:
+        return render_template('data.html', data=data)
 
 # From Lecture note: This code works, the one below /station doesn't work. Should we delete the one below?
 @app.route("/stations")
@@ -47,26 +97,6 @@ def get_stations():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-
-# @app.route('/station')
-# def station_page():
-#     db = mysql.connector.connect(host="dbbikes.cbqpbir87k5q.eu-west-1.rds.amazonaws.com",
-#                                  user="fei", passwd="22200125", db="dbbikes", port=3306)
-#     cur = db.cursor()
-#     sql = ("""SELECT * FROM station""")
-#     cur.execute(sql)
-#     results = cur.fetchall()
-#     db.close()
-#     return render_template('station.html', station=results)
-
-
-# Replace YOUR_API_KEY with your actual Google Maps API key
-GOOGLE_MAPS_API_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
-
-# Dont need this anymore because the following one already retrieve information from database
-# @app.route('/station/<int:station_id>')
-# def station(station_id):
-#     return f'Retrieving info for Station: {station_id}'.format(station_id)
 
 # From lecture note, working now. It's showing info of 1 station defined in the link
 @app.route("/available/<int:station_id>")
@@ -107,10 +137,6 @@ def weather():
     weather = jsonify(available=r_text)
     return weather
     # return f'Weather information: {weather}'.format(weather)
-
-@app.route('/')
-def index():
-    return render_template('home.html', api_key=GOOGLE_MAPS_API_KEY)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,11 +2,7 @@
 <html>
 <head>
     <title>Map</title>
-    <style>
-        #map {
-            height: 500px;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/style.css">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}"></script>
     <script>
         function initMap() {
@@ -42,9 +38,7 @@
                     infoWindow.close();
                 });
             }
-        }
-        
-        
+        }        
     </script>
 </head>
 <body onload="initMap()">
