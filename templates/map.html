@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map</title>
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}"></script>
+    <script>
+        function initMap() {
+            var mapOptions = {{ map_options|tojson }};
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        
+            var markers = {{ markers|tojson }};
+            console.log(markers);  // Print the markers array in the console
+        
+            for (var i = 0; i < markers.length; i++) {
+                var marker = markers[i];
+                var newMarker = new google.maps.Marker({
+                    position: marker.position,
+                    title: marker.title,
+                    map: map
+                });
+                // Add the event listeners to each marker
+                attachInfoWindow(newMarker, map, marker);
+            }
+                
+            function attachInfoWindow(marker, map, markerData) {
+                var infoWindow = new google.maps.InfoWindow({
+                    content: '<div><strong>' + markerData.title + '</strong></div>' +
+                        '<div>Status: ' + markerData.status + '</div>' +
+                        '<div>Available stands: ' + markerData.bike_stands + '</div>'
+                });
+            
+                marker.addListener('mouseover', function() {
+                    infoWindow.open(map, this);
+                });
+            
+                marker.addListener('mouseout', function() {
+                    infoWindow.close();
+                });
+            }
+        }
+        
+        
+    </script>
+</head>
+<body onload="initMap()">
+    <div id="map"></div>
+</body>
+</html>
