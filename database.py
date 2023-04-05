@@ -164,6 +164,6 @@ def create_table_weather():
 
 
 # If need to redesign/delete the table, run specific function.
-create_table_station()
-create_table_availability()
-create_table_weather()
+# create_table_station()
+# create_table_availability()
+# create_table_weather()
