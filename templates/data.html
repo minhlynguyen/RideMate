@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Station Data</title>
+</head>
+
+<body>
+    <h1>Station Data</h1>
+    <form action="{{ url_for('station_data') }}" method="get">
+        <label for="query">Search:</label>
+        <input type="text" name="query" id="query" value="{{ request.args.get('query', '') }}">
+        <select name="filter">
+            <option value="number" {% if request.args.get('filter')=='number' %}selected{% endif %}>Station Number
+            </option>
+            <option value="name" {% if request.args.get('filter')=='name' %}selected{% endif %}>Station Name</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Station Number</th>
+                <th>Station Name</th>
+                <th>Available Bikes</th>
+                <th>Available Stands</th>
+                <th>Total Capacity</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in data %}
+            <tr>
+                <td>{{ station[0] }}</td>
+                <td>{{ station[1] }}</td>
+                <td>{{ station[2] }}</td>
+                <td>{{ station[3] }}</td>
+                <td>{{ station[4] }}</td>
+                <td>{{ station[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if search_results %}
+    <h2>Search Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Station Number</th>
+                <th>Station Name</th>
+                <th>Available Bikes</th>
+                <th>Available Stands</th>
+                <th>Total Capacity</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in search_results %}
+            <tr>
+                <td>{{ station[0] }}</td>
+                <td>{{ station[1] }}</td>
+                <td>{{ station[2] }}</td>
+                <td>{{ station[3] }}</td>
+                <td>{{ station[4] }}</td>
+                <td>{{ station[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+
+</html>

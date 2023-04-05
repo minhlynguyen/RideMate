@@ -1,13 +1,17 @@
-import config
-from sqlalchemy import create_engine,text
-import traceback
 import glob
 import os
-from pprint import pprint
-import simplejson as json
-import requests
 import time
+import traceback
+from pprint import pprint
+
+import requests
+import simplejson as json
+from sqlalchemy import create_engine, text
+
+import config
+
 # from IPython.display import display
+
 
 def connect_to_database():
     try:
@@ -20,20 +24,23 @@ def connect_to_database():
         return engine
 
 # Test the database connection
-def main() :
+
+
+def main():
     try:
         with connect_to_database().connect() as conn:
             res = conn.execute(text("SHOW VARIABLES"))
             print(list(res))
     except:
         print(traceback.format_exc())
-    return 
+    return
+
 
 if __name__ == '__main__':
     main()
 
 
-def create_table_station():    
+def create_table_station():
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     connect_to_database().execute(sql)
 
@@ -64,13 +71,13 @@ def create_table_station():
         print(e)
 
 
-def create_table_availability():  
+def create_table_availability():
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     connect_to_database().execute(sql)
 
     for res in connect_to_database().execute("SHOW VARIABLES"):
         print(res)
-       
+
     sql = """
     CREATE TABLE IF NOT EXISTS availability
     (
@@ -90,14 +97,13 @@ def create_table_availability():
         print(e)
 
 
-
-def create_table_weather():   
+def create_table_weather():
     sql = """CREATE DATABASE IF NOT EXISTS dbbikes"""
     connect_to_database().execute(sql)
 
     for res in connect_to_database().execute("SHOW VARIABLES"):
         print(res)
-      
+
     sql = """
     CREATE TABLE IF NOT EXISTS `dbbikes`.`weather_current` (
     `station` INT NOT NULL,
@@ -109,7 +115,7 @@ def create_table_weather():
     );
     """
 
-    # sql 
+    # sql
     try:
         res = connect_to_database().execute("DROP TABLE IF EXISTS weather_current")
         res = connect_to_database().execute(sql)
@@ -130,7 +136,7 @@ def create_table_weather():
      );
      """
 
-    # sql 
+    # sql
     try:
         res = connect_to_database().execute("DROP TABLE IF EXISTS weather_forecast_24h")
         res = connect_to_database().execute(sql)
@@ -156,8 +162,8 @@ def create_table_weather():
     except Exception as e:
         print(e)
 
+
 # If need to redesign/delete the table, run specific function.
 # create_table_station()
 # create_table_availability()
 # create_table_weather()
-
