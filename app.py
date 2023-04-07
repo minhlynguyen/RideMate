@@ -21,31 +21,19 @@ def get_db():
         db = g._database = database.connect_to_database()
     return db
 
-# From lecture note, isn't working
-# @app.teardown_appcontext
-# def close_connection(exception):
-#     db = getattr(g, '_database', None)
-#     if db is not None:
-#         db.close()
+# Set up the Google Maps client
+gmaps = googlemaps.Client(config.MAP_KEY)
 
+# Search for a location in Dublin
+address = "Dublin, Ireland"
+geocode_result = gmaps.geocode(address)
+
+# Get the latitude and longitude of the location
+lat = geocode_result[0]["geometry"]["location"]["lat"]
+lng = geocode_result[0]["geometry"]["location"]["lng"]
+   
 @app.route('/')
 def index():
-    # Set up the Google Maps client
-    gmaps = googlemaps.Client(config.MAP_KEY)
-
-    # Search for a location in Dublin
-    address = "Dublin, Ireland"
-    geocode_result = gmaps.geocode(address)
-
-    # Get the latitude and longitude of the location
-    lat = geocode_result[0]["geometry"]["location"]["lat"]
-    lng = geocode_result[0]["geometry"]["location"]["lng"]
-
-    # Set up the map options
-    map_options = {
-        "center": {"lat": lat, "lng": lng},
-        "zoom": 15
-    }
 
     # Fetch the station data from the MySQL database
     query = 'SELECT * FROM station'
@@ -58,13 +46,14 @@ def index():
         marker = {
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
+            'weathercode': 10,
             'status': station[9],
             'bike_stands': station[3]
         }
         markers.append(marker)
 
-    # Render the template with the map options, API key, and markers
-    return render_template("map.html", map_options=map_options, api_key=config.MAP_KEY, markers=markers)
+    # Render the template with API key, markers, and specified lat and lng 
+    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
 
 @app.route('/data')
 def station_data():
