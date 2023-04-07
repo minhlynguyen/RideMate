@@ -40,22 +40,25 @@
 
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
-                    content: '<div id="hover"><div><strong>' + markerData.title + '</strong></div>' +
+                    content: '<div><strong>' + markerData.title + '</strong>' +
                         '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
                         '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
                 });
 
                 marker.addListener('mouseover', function () {
-                infoWindow.open(map, this);
+                    infoWindow.open(map, this);
                 });
 
                 marker.addListener('mouseout', function () {
-                infoWindow.close();
+                    infoWindow.close();
+                });
+
+                marker.addListener('click', function () {
+                    document.getElementById('side-bar').style.height = '98%';
                 });
             }
 
-            
             const input = document.getElementById("pac-input");            
 
             const autocomplete = new google.maps.places.Autocomplete(input);
@@ -93,6 +96,10 @@
             <form id="pac-form">
                 <input id="pac-input" type="text" placeholder="Enter a location" />
             </form>
+        </div>
+        <div id="side-info">
+            {% block sideinfo %}           
+            {% endblock %}
         </div>
     </div>
     <div id="map"></div>

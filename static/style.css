@@ -20,8 +20,10 @@ body {
 
 #side-bar {
     z-index: 9;
-    width: 25%;
-    height: 100%;
+    width:22%;
+    height: 40px;
+    /* on marker click */
+    /* height: 100% */
     border: 0;
     border-radius: 2px;
     margin: 10px;
@@ -30,6 +32,11 @@ body {
     overflow: hidden;
     font-family: Roboto;
     padding: 0;
+    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
   }
 
 #pac-container{
@@ -42,10 +49,8 @@ body {
     height: 100%;
 }
 #pac-input {
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     box-sizing: border-box;
-    background-color: #fff;
     font-family: Roboto;
     font-size: 15px;
     font-weight: 300;
