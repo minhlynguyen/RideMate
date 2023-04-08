@@ -94,8 +94,8 @@ input:focus-visible {
     opacity: 0.6;
 }
 
-#weather-forecast{
-    height: 30%;
+#weather{
+    height: 300px;
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;

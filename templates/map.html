@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
     <script src="../static/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Google Map API function
         function initMap() {
@@ -21,9 +22,9 @@
                 center: { lat: {{ lat }}, lng: {{ lng }}},
                 mapTypeControl: true,
                 mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: google.maps.ControlPosition.TOP_CENTER
-            }
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_CENTER
+                }
             });
 
             var markers = {{ markers| tojson }};
@@ -34,7 +35,7 @@
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
                     title: marker.title,
-                    map: map,
+                    map: map
                 });
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
@@ -60,6 +61,12 @@
                     document.getElementById('side-bar').style.height = '98%';
                     document.getElementById('side-info').style.display = 'flex';
                     document.getElementById('close-icon').style.display = 'block';
+                    var response = fetch("https://api.open-meteo.com/v1/forecast?latitude="+
+                        markerData.position.lat+
+                        "&longitude="+markerData.position.lng+
+                        "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&current_weather=true"
+                    ).then(response => response.json()
+                    ).then(response => console.log(JSON.stringify(response)));
                 });
             }
 
@@ -89,7 +96,35 @@
                 map.setZoom(17);
             }
             });
-        }        
+        };
+        
+        var canvas = document.getElementById("temperature-chart");
+
+        function printDebug(){
+            console.log("Passed");
+        }
+
+        //var chart = new Chart(canvas, {
+        //    type: 'line',
+        //    data: {
+        //        labels: {{ hour_list|safe }},
+        //        datasets: [{
+        //            label: 'Temperature',
+        //            data: {{ temperature_list|safe }},
+        //            borderColor: 'blue',
+        //            fill: false
+        //        }]
+        //    },
+        //    options: {
+        //        scales: {
+        //            yAxes: [{
+        //                ticks: {
+        //                    beginAtZero: true
+        //                }
+        //           }]
+        //        }
+        //    }
+// });
     </script>
 </head>
 
@@ -102,11 +137,17 @@
             </form>
         </div>
         <div id="side-info">
-            <div id="weather-forecast">
+            <div id="weather">
+            <div id="weather-current">
                 <div id="weather-icon"></div>
                 <div id="temperature"></div>
                 <div id=""></div>
-            
+            </div>
+            <div id="weather-hour">
+                <canvas id="temperature-chart"></canvas>
+                <canvas id="precipitation-chart"></canvas>
+                <canvas id="wind-chart"></canvas>
+            </div>
             </div>
             <div id="station-history"></div>
             <div id="station-prediction"></div>
