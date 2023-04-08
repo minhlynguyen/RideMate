@@ -8,7 +8,9 @@
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons-wind.min.css"> #}
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.css"> #}
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.min.css"> #}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <script src="../static/script.js"></script>
     <script>
         // Google Map API function
         function initMap() {
@@ -32,7 +34,7 @@
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
                     title: marker.title,
-                    map: map
+                    map: map,
                 });
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
@@ -56,6 +58,8 @@
 
                 marker.addListener('click', function () {
                     document.getElementById('side-bar').style.height = '98%';
+                    document.getElementById('side-info').style.display = 'flex';
+                    document.getElementById('close-icon').style.display = 'block';
                 });
             }
 
@@ -98,8 +102,17 @@
             </form>
         </div>
         <div id="side-info">
-            {% block sideinfo %}           
-            {% endblock %}
+            <div id="weather-forecast">
+                <div id="weather-icon"></div>
+                <div id="temperature"></div>
+                <div id=""></div>
+            
+            </div>
+            <div id="station-history"></div>
+            <div id="station-prediction"></div>
+        </div>
+        <div id="close-side">
+            <i id="close-icon" class="material-icons" onclick="closeSide()" >&#xe316;</i>
         </div>
     </div>
     <div id="map"></div>

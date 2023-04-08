@@ -20,8 +20,9 @@ body {
 
 #side-bar {
     z-index: 9;
-    width:22%;
+    width: 300px;
     height: 40px;
+    transition: 0.2s; 
     /* on marker click */
     /* height: 100% */
     border: 0;
@@ -37,11 +38,16 @@ body {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-  }
+    position: relative;
+}
 
 #pac-container{
     width: 100%;
     height: 40px;
+}
+
+.pac-container:after{
+    content:none !important;
 }
 
 #pac-form{
@@ -63,4 +69,35 @@ body {
 
 input:focus-visible {
     outline: none;
+}
+
+#side-info{
+    display: none;
+    height: 90%;
+    margin-top: 10px;
+    flex-direction: column;
+}
+
+#close-side{
+    width: 100%;
+    position: absolute;
+    bottom: 1px;
+    justify-content: center;
+}
+
+#close-icon{
+    text-align: center;
+    display: none;
+    cursor: pointer;
+    font-size:25px;
+    color: gray;
+    opacity: 0.6;
+}
+
+#weather-forecast{
+    height: 30%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: row;
 }
