@@ -8,7 +8,9 @@
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons-wind.min.css"> #}
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.css"> #}
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.min.css"> #}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <script src="../static/script.js"></script>
     <script>
         // Google Map API function
         function initMap() {
@@ -32,7 +34,7 @@
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
                     title: marker.title,
-                    map: map
+                    map: map,
                 });
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
@@ -40,22 +42,27 @@
 
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
-                    content: '<div id="hover"><div><strong>' + markerData.title + '</strong></div>' +
+                    content: '<div><strong>' + markerData.title + '</strong>' +
                         '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
                         '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
                 });
 
                 marker.addListener('mouseover', function () {
-                infoWindow.open(map, this);
+                    infoWindow.open(map, this);
                 });
 
                 marker.addListener('mouseout', function () {
-                infoWindow.close();
+                    infoWindow.close();
+                });
+
+                marker.addListener('click', function () {
+                    document.getElementById('side-bar').style.height = '98%';
+                    document.getElementById('side-info').style.display = 'flex';
+                    document.getElementById('close-icon').style.display = 'block';
                 });
             }
 
-            
             const input = document.getElementById("pac-input");            
 
             const autocomplete = new google.maps.places.Autocomplete(input);
@@ -93,6 +100,19 @@
             <form id="pac-form">
                 <input id="pac-input" type="text" placeholder="Enter a location" />
             </form>
+        </div>
+        <div id="side-info">
+            <div id="weather-forecast">
+                <div id="weather-icon"></div>
+                <div id="temperature"></div>
+                <div id=""></div>
+            
+            </div>
+            <div id="station-history"></div>
+            <div id="station-prediction"></div>
+        </div>
+        <div id="close-side">
+            <i id="close-icon" class="material-icons" onclick="closeSide()" >&#xe316;</i>
         </div>
     </div>
     <div id="map"></div>
