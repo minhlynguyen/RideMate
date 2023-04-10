@@ -89,12 +89,13 @@
                 map.setZoom(17);
             }
             });
-        }        
+        }
+                
     </script>
 </head>
 
 <body onload="initMap()">
-    {# If possible, please keep the html id and CSS like this #}
+    {# If possible, please keep the html id and CSS like this #}  
     <div id="side-bar">
         <div id="pac-container">
             <form id="pac-form">
@@ -102,13 +103,20 @@
             </form>
         </div>
         <div id="side-info">
+            <div id="Station-information">
+              <h3 class="sidebar-label"><i class="sidebar-icon bike material-icons">directions_bike</i>Bike Sharing Stations</h3>
+              <iframe src="/data" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+            </div>
             <div id="weather-forecast">
-                <div id="weather-icon"></div>
+              <h3 class="sidebar-label"><i class="sidebar-icon weather material-icons">wb_sunny</i>Weather Forecast</h3>
+              <div id="weather-icon"></div>
                 <div id="temperature"></div>
                 <div id=""></div>
-            
             </div>
-            <div id="station-history"></div>
+            <div id="station-history">
+              <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
+              <!-- Station history goes here -->
+            </div>
             <div id="station-prediction"></div>
         </div>
         <div id="close-side">

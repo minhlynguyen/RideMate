@@ -1,15 +1,17 @@
 # import mysql.connector
-from sqlalchemy import text
-from flask import Flask, g, render_template, jsonify, request
-import config
-import time
-import requests
-import json
 import functools
+import json
+import time
 import traceback
-import database
+
 import googlemaps
-from flask_googlemaps import GoogleMaps, Map
+import requests
+from flask import Flask, g, jsonify, render_template, request
+from flask_googlemaps import GoogleMaps
+from sqlalchemy import text
+
+import config
+import database
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -21,6 +23,7 @@ def get_db():
         db = g._database = database.connect_to_database()
     return db
 
+
 # Set up the Google Maps client
 gmaps = googlemaps.Client(config.MAP_KEY)
 
@@ -31,7 +34,8 @@ geocode_result = gmaps.geocode(address)
 # Get the latitude and longitude of the location
 lat = geocode_result[0]["geometry"]["location"]["lat"]
 lng = geocode_result[0]["geometry"]["location"]["lng"]
-   
+
+
 @app.route('/')
 def index():
 
@@ -52,8 +56,9 @@ def index():
         }
         markers.append(marker)
 
-    # Render the template with API key, markers, and specified lat and lng 
+    # Render the template with API key, markers, and specified lat and lng
     return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
+
 
 @app.route('/data')
 def station_data():
@@ -65,11 +70,13 @@ def station_data():
     if query and filter_criteria:
         query = f"SELECT * FROM station WHERE {filter_criteria} LIKE '%{query}%'"
         search_results = engine.connect().execute(text(query)).fetchall()
-        return render_template('data.html', data=data, search_results=search_results)
+        return render_template('data.html', search_results=search_results)
     else:
-        return render_template('data.html', data=data)
+        return render_template('data.html')
 
 # From Lecture note: This code works, the one below /station doesn't work. Should we delete the one below?
+
+
 @app.route("/stations")
 @functools.lru_cache(maxsize=128)
 def get_stations():
@@ -88,6 +95,8 @@ def get_stations():
         return "error in get_stations", 404
 
 # From lecture note, working now. It's showing info of 1 station defined in the link
+
+
 @app.route("/available/<int:station_id>")
 def get_station(station_id):
     engine = get_db()
@@ -102,6 +111,8 @@ def get_station(station_id):
 #     return station_id
 
 # Function to get the longitude of the chosen station
+
+
 @app.route("/available/<int:station_id>")
 def get_lng(station_id):
     engine = get_db()
@@ -109,12 +120,14 @@ def get_lng(station_id):
         "SELECT position_lng from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
     return lng
 
+
 @app.route("/available/<int:station_id>")
 def get_lat(station_id):
     engine = get_db()
     lat = engine.execute(
         "SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
     return lat
+
 
 @app.route('/weather')
 def weather():
@@ -127,14 +140,18 @@ def weather():
     return weather
     # return f'Weather information: {weather}'.format(weather)
 
+
 if __name__ == '__main__':
     app.run(debug=True)
 
 # Testing decorators:
+
+
 def build_regression_model(**kwargs):
     print('building model...')
 
 # build_regression_model()
+
 
 start = time.time()
 build_regression_model()
@@ -142,6 +159,7 @@ end = time.time()
 
 print(end-start)
 print("took: {} secs".format(end-start))
+
 
 def timeit(method):
     def timed(*args, **kw):
