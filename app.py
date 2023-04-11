@@ -129,6 +129,19 @@ def get_lat(station_id):
         "SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
     return lat
 
+@app.route("/availability/daily/<int:station_id>")
+def get_availability_daily(station_id):
+    engine = get_db()
+    df = pd.read_sql_query("SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
+    df ['last_update'] = pd.to_datetime(df.last_update, unit='s')
+    df.set_index('last_update', inplace=True)
+    res = df[['available_bikes', 'available_bike_stands']].resample('1d').mean()
+    daily=jsonify(data=json.dumps(list(zip(map(lambda x:x.isoformat(), res.index),res.values.tolist()))))
+    return render_template("chart.html",daily=daily)
+
+@app.route("/chart")
+def chart():
+    return render_template("chart.html")
 
 @app.route('/weather')
 def weather():
