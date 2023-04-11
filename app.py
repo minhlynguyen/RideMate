@@ -42,11 +42,12 @@ def index():
     # Fetch the station data from the MySQL database
     query = 'SELECT * FROM station'
     engine = get_db()
-    station_data = engine.connect().execute(text(query)).fetchall()
+    stations = engine.connect().execute(text(query)).fetchall()
+    weather_station = {}
 
     # Set up the markers
     markers = []
-    for station in station_data:
+    for station in stations:
         marker = {
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],

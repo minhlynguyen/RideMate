@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
     <script src="../static/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Google Map API function
         function initMap() {
@@ -21,9 +22,9 @@
                 center: { lat: {{ lat }}, lng: {{ lng }}},
                 mapTypeControl: true,
                 mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: google.maps.ControlPosition.TOP_CENTER
-            }
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_CENTER
+                }
             });
 
             var markers = {{ markers| tojson }};
@@ -34,7 +35,7 @@
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
                     title: marker.title,
-                    map: map,
+                    map: map
                 });
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
@@ -43,7 +44,7 @@
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
                     content: '<div><strong>' + markerData.title + '</strong>' +
-                        '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
+                        '<div><img src="../static/thermometer.png" height="20"></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
                         '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
                 });
@@ -60,6 +61,46 @@
                     document.getElementById('side-bar').style.height = '98%';
                     document.getElementById('side-info').style.display = 'flex';
                     document.getElementById('close-icon').style.display = 'block';
+
+                    var weather_api = "https://api.open-meteo.com/v1/forecast?latitude="+
+                        markerData.position.lat+
+                        "&longitude="+markerData.position.lng+
+                        "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&current_weather=true"
+
+                    // Getting weather info
+                    // var responseJson = fetch(weather_api).then(function(response){
+                    //    return response.json();
+                    //})
+                    //.then(data => {
+                    //    data.forEach(result => {
+                    //        return result.current_weather
+                    //    })
+                    //})
+                    // ).then(response => response.json()
+                    // );
+                    // .then(response => JSON.stringify(response));
+
+
+                    // console.log(JSON.stringify(responseJson));
+
+                    // console.log(responseJson)
+                    var weatherCode;
+                    var xmlhttp = new XMLHttpRequest();
+
+                    xmlhttp.onreadystatechange = function() {
+                        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {        
+                            //Parse the JSON data to a JavaScript variable. 
+                            parsedObj = JSON.parse(xmlhttp.responseText);  
+                            weatherCode = parsedObj.current_weather.weathercode;                            
+                            
+                            //print weatherCode to html
+                            // console.log(weatherCode);
+                            document.getElementById("weather-icon").innerHTML=weatherCode
+                        }
+                    };
+                    xmlhttp.open("GET", weather_api, true);
+                    xmlhttp.send();
+
                 });
             }
 
@@ -89,8 +130,35 @@
                 map.setZoom(17);
             }
             });
+        };
+        
+        var canvas = document.getElementById("temperature-chart");
+
+        function printDebug(){
+            console.log("Passed");
         }
-                
+
+        //var chart = new Chart(canvas, {
+        //    type: 'line',
+        //    data: {
+        //        labels: {{ hour_list|safe }},
+        //        datasets: [{
+        //            label: 'Temperature',
+        //            data: {{ temperature_list|safe }},
+        //            borderColor: 'blue',
+        //            fill: false
+        //        }]
+        //    },
+        //    options: {
+        //        scales: {
+        //            yAxes: [{
+        //                ticks: {
+        //                    beginAtZero: true
+        //                }
+        //           }]
+        //        }
+        //    }
+// });
     </script>
 </head>
 
@@ -107,11 +175,17 @@
               <h3 class="sidebar-label"><i class="sidebar-icon bike material-icons">directions_bike</i>Bike Sharing Stations</h3>
               <iframe src="/data" frameborder="0" style="width: 100%; height: 100%;"></iframe>
             </div>
-            <div id="weather-forecast">
-              <h3 class="sidebar-label"><i class="sidebar-icon weather material-icons">wb_sunny</i>Weather Forecast</h3>
-              <div id="weather-icon"></div>
+            <div id="weather">
+                <div id="weather-current">
+                    <div id="weather-icon"></div>
                 <div id="temperature"></div>
                 <div id=""></div>
+            </div>
+            <div id="weather-hour">
+                <canvas id="temperature-chart"></canvas>
+                <canvas id="precipitation-chart"></canvas>
+                <canvas id="wind-chart"></canvas>
+            </div>
             </div>
             <div id="station-history">
               <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
