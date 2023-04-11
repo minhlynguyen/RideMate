@@ -40,19 +40,20 @@ def station_data():
     filter_criteria = request.args.get('filter')
     if query and filter_criteria:
         conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
+        cursor = conn.cursor(prepared=True)
 
-        query = f"SELECT * FROM station WHERE {filter_criteria} LIKE '%{query}%'"
-        cursor.execute(query)
+        query = f"SELECT * FROM station WHERE {filter_criteria} LIKE %s"
+        search_query = f"%{query}%"
+        cursor.execute(query, (search_query,))
 
         search_results = cursor.fetchall()
 
         cursor.close()
         conn.close()
 
-        return render_template('data.html', data=data, search_results=search_results)
+        return render_template('data.html', data=data, search_results=search_results, query=query, filter_criteria=filter_criteria)
     else:
-        return render_template('data.html', data=data)
+        return render_template('data.html', data=data, query=query, filter_criteria=filter_criteria)
 
 
 @app.route('/')
