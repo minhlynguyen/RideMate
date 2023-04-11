@@ -99,5 +99,15 @@ input:focus-visible {
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;
+    flex-direction: column;
+}
+
+#weather_current{
+    width: 100%;
+    display: flex;
     flex-direction: row;
+}
+
+#weather_icon{
+    height: 100%;
 }
