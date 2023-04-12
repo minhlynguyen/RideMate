@@ -30,7 +30,7 @@ body {
     margin: 10px;
     padding: 0 0.5em;
     font: 400 18px Roboto, Arial, sans-serif;
-    /* overflow: hidden; */
+    overflow: hidden;
     font-family: Roboto;
     padding: 0;
     box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
@@ -40,6 +40,7 @@ body {
     flex-direction: column;
     position: relative;
 }
+
 
 #pac-container {
     width: 100%;
@@ -88,7 +89,6 @@ input:focus-visible {
     opacity: 0.6;
 }
 
-<<<<<<< HEAD
 #nearest-stations {
     padding: 1rem;
     font-size: 14px;
@@ -98,37 +98,6 @@ input:focus-visible {
 }
 
 #nearest-stations div {
-=======
-#side-bar-right { 
-    z-index: 1;
-    width: 0px;
-    /* display: none; */
-    /* height: 40px; */
-    transition: 0.5s;
-    height: 100%;
-    border: 0;
-    padding: 0 0.5em;
-    font: 400 18px Roboto, Arial, sans-serif;
-    font-family: Roboto;
-    padding: 0;
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-    background-color: #fff;
-    border-radius: 10px;
-    flex-direction: row;
-    position: absolute;
-    right: 0;
-}
-
-#side-bar-info{
-    width: 335px;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-}
-
-#weather-current{
-    width: 100%;
->>>>>>> main
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -140,58 +109,8 @@ input:focus-visible {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-<<<<<<< HEAD
 #nearest-stations div:hover {
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-=======
-#weather-hour{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-#station-history{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-#weekly-chart-bike, #weeky-chart-bike_stands{
-    display: block;
-    height: 175px;
-    width: 300px;
-}
-
-#close-side-right {
-    height: 100%;
-    width: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#close-icon-right {
-    text-align: center;
-    display: none;
-    cursor: pointer;
-    font-size: 25px;
-    color: gray;
-    opacity: 0.6;
-}
-
-.sidebar-icon {
-    font-size: 24px;
-    margin-right: 10px;
-    margin-right: 10px;
-}
-
-.sidebar-icon.bike {
-    color: #2ecc71;
-}
-
-.sidebar-icon.weather {
-    color: #f1c40f;
->>>>>>> main
 }
 
 #nearest-stations h4 {

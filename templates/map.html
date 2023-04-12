@@ -4,22 +4,20 @@
 <head>
     <title>Map</title>
     <link rel="stylesheet" href="../static/style.css">
+    {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons-wind.css"> #}
+    {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons-wind.min.css"> #}
+    {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.css"> #}
+    {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.min.css"> #}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,geometry"></script>
     <script src="../static/script.js"></script>
-<<<<<<< HEAD
-=======
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
->>>>>>> main
     <script>
         // Google Map API function
         function initMap() {
 
             // Set up the map options. Used in javascript to control position of the mapTypeControl       
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 15,
+                zoom: 13.75,
                 center: { lat: {{ lat }}, lng: {{ lng }}},
                 mapTypeControl: true,
                 mapTypeControlOptions: {
@@ -43,7 +41,6 @@
             }
 
             function attachInfoWindow(marker, map, markerData) {
-<<<<<<< HEAD
                 var infoWindow = new google.maps.InfoWindow({
                     content: '<div><strong>' + markerData.title + '</strong>' +
                         '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
@@ -53,23 +50,9 @@
                         '<div>Banking: ' + (markerData.banking ? 'Yes' : 'No') + '</div></div>'
 
                 });
-=======
-                
-                contentString = '<div><strong>' + markerData.title + '</strong>' +
-                        // show availability info in the hover window                                           
-                        '<div><img src="../static/thermometer.png" height="20"></div>' +
-                        '<div>Status: ' + markerData.status + '</div>' +
-                        '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
-                
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString,
-                //    maxWidth: 250,
-                });                        
->>>>>>> main
 
                 marker.addListener('mouseover', function () {
                     infoWindow.open(map, this);
-                    
                 });
 
                 marker.addListener('mouseout', function () {
@@ -77,7 +60,6 @@
                 });
             }
 
-<<<<<<< HEAD
             var availability_data = {{ availability| tojson }};
 
             function findNearestStations(position) {
@@ -88,160 +70,8 @@
                             position,
                             new google.maps.LatLng(marker.position.lat, marker.position.lng)
                         ),
-=======
-                marker.addListener('click', function () {
-                    document.getElementById('side-bar-right').style.width= '350px';
-                    document.getElementById('side-bar-right').style.display = 'flex';
-                    document.getElementById('close-icon-right').style.display = 'block';
-
-                    // Showing weather information
-                    var weather_api = "https://api.open-meteo.com/v1/forecast?latitude="+
-                        markerData.position.lat+
-                        "&longitude="+markerData.position.lng+
-                        "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&current_weather=true"
-
-                    // Getting weather info
-                    var weatherCode;
-                    var xmlhttp = new XMLHttpRequest();
->>>>>>> main
 
                     };
-<<<<<<< HEAD
-=======
-                    xmlhttp.open("GET", weather_api, true);
-                    xmlhttp.send();
-
-                    // Showing station average chart
-                    google.charts.load('current', {'packages':['corechart']});
-                    google.charts.setOnLoadCallback(drawChart);
-    
-                    async function getData() {
-                        const url = '/availability/daily/'+markerData.number;
-                        const response = await fetch(url);
-                        const { data } = await response.json();
-                        return JSON.parse(data);
-                    }
-
-                    function calculateWeeklyAverage_bikes(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                            currentWeek[dayIndex] += availability[0];
-                            count++;
-                            dayIndex++;
-                            dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        return weeklyData.slice(1);
-                    }
-
-                    function calculateWeeklyAverage_bike_stands(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                        currentWeek[dayIndex] += availability[1];
-                        count++;
-                        dayIndex++;
-                        dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        return weeklyData.slice(1);
-                    }
-
-                    async function drawChart() {
-                        const data = await getData();
-                        const weeklyData_bikes = calculateWeeklyAverage_bikes(data);
-                        const weeklyData_bike_stands = calculateWeeklyAverage_bike_stands(data);
-      
-                        const ctx = document.getElementById('weekly-chart-bikes');
-                        const chart = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bikes',
-                                    backgroundColor: 'rgba(255, 26, 104, 0.2)',
-                                    borderColor: 'rgba(255, 26, 104, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bikes.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-
-                        const ctx2 = document.getElementById('weekly-chart-bike_stands');
-                        const chart2 = new Chart(ctx2, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bike Stands',
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bike_stands.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-                    };
->>>>>>> main
                 });
             
                 distances.sort((a, b) => a.distance - b.distance);
@@ -300,10 +130,6 @@
             });
             
         }
-<<<<<<< HEAD
-=======
-        
->>>>>>> main
     </script>
 </head>
 
@@ -315,47 +141,12 @@
                 <input id="pac-input" type="text" placeholder="Enter a location" />
             </form>
         </div>
-<<<<<<< HEAD
         <div id="nearest-stations">
             <!-- Nearest stations will be displayed here -->
         </div>
         <div id="close-side">
             <i id="close-icon" class="material-icons" onclick="closeSide()">remove</i>
         </div>
-=======
-        <div id="side-info">
-            <div id="Station-information">
-              <h3 class="sidebar-label"><i class="sidebar-icon bike material-icons">directions_bike</i>Bike Sharing Stations</h3>
-              <iframe src="/data" frameborder="0" style="width: 100%; height: 100%;"></iframe>
-            </div>
-        </div>
-        <div id="close-side">
-            <i id="close-icon" class="material-icons" onclick="closeSide()" >&#xe316;</i>
-        </div>
-    </div>
-    <div id="side-bar-right">
-        <div id="close-side-right">
-            <i id="close-icon-right" class="material-icons" onclick="closeSideRight()" >&#xe315;</i>
-        </div>
-        <div id="side-bar-info">
-            <div id="weather-current">
-                <div id="weather-icon">Hello</div>
-                <div id="temperature"></div>
-                <div id=""></div>
-            </div>
-            <div id="weather-hour">
-                <canvas id="temperature-chart"></canvas>
-                <canvas id="precipitation-chart"></canvas>
-                <canvas id="wind-chart"></canvas>
-            </div>
-            <div id="station-history">
-                <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
-                <canvas id="weekly-chart-bikes"></canvas>
-                <canvas id="weekly-chart-bike_stands"></canvas>
-            </div>
-            <div id="station-prediction"></div>
-        </div>
->>>>>>> main
     </div>
     <div id="map"></div>
 </body>
