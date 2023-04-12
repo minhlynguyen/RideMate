@@ -3,16 +3,18 @@ import functools
 import json
 import time
 import traceback
-
 import googlemaps
 import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
 from sqlalchemy import text
-
 import config
 import database
 import pandas as pd
+import pickle
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -108,6 +110,20 @@ def get_availability_daily(station_id):
 @app.route("/chart")
 def chart():
     return render_template("chart.html")
+
+
+# filename = f'models/{int:station_id}.pkl'
+# with open(filename,'rb'') as handle:
+#     model = pickle.load(handle)
+filename = f'models_bikes/23.pkl'
+with open(filename,'rb') as handle:
+    model = pickle.load(handle)
+
+@app.route("/predict_bikes")
+def predict():
+    result = model.predict([[22,2,0,4.9,0,21.1]])
+    return round(list(result)[0])
+
 
 if __name__ == '__main__':
     app.run(debug=True)
