@@ -9,9 +9,8 @@
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.css"> #}
     {# <link rel="stylesheet" href="../static/weather-icons-master/css/weather-icons.min.css"> #}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,geometry"></script>
     <script src="../static/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Google Map API function
         function initMap() {
@@ -22,9 +21,9 @@
                 center: { lat: {{ lat }}, lng: {{ lng }}},
                 mapTypeControl: true,
                 mapTypeControlOptions: {
-                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                    position: google.maps.ControlPosition.TOP_CENTER
-                }
+                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: google.maps.ControlPosition.TOP_CENTER
+            }
             });
 
             var markers = {{ markers| tojson }};
@@ -35,7 +34,7 @@
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
                     title: marker.title,
-                    map: map
+                    map: map,
                 });
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
@@ -44,9 +43,12 @@
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
                     content: '<div><strong>' + markerData.title + '</strong>' +
-                        '<div><img src="../static/thermometer.png" height="20"></div>' +
+                        '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
-                        '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
+                        '<div>Available stands: ' + markerData.bike_stands + '</div>' +
+                        '<div>Available bikes: ' + markerData.available_bikes + '</div></div>'+
+                        '<div>Banking: ' + (markerData.banking ? 'Yes' : 'No') + '</div></div>'
+
                 });
 
                 marker.addListener('mouseover', function () {
@@ -56,109 +58,78 @@
                 marker.addListener('mouseout', function () {
                     infoWindow.close();
                 });
+            }
 
-                marker.addListener('click', function () {
-                    document.getElementById('side-bar').style.height = '98%';
-                    document.getElementById('side-info').style.display = 'flex';
-                    document.getElementById('close-icon').style.display = 'block';
+            var availability_data = {{ availability| tojson }};
 
-                    var weather_api = "https://api.open-meteo.com/v1/forecast?latitude="+
-                        markerData.position.lat+
-                        "&longitude="+markerData.position.lng+
-                        "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&current_weather=true"
+            function findNearestStations(position) {
+                let distances = markers.map((marker, index) => {
+                    return {
+                        index: index,
+                        distance: google.maps.geometry.spherical.computeDistanceBetween(
+                            position,
+                            new google.maps.LatLng(marker.position.lat, marker.position.lng)
+                        ),
 
-                    // Getting weather info
-                    // var responseJson = fetch(weather_api).then(function(response){
-                    //    return response.json();
-                    //})
-                    //.then(data => {
-                    //    data.forEach(result => {
-                    //        return result.current_weather
-                    //    })
-                    //})
-                    // ).then(response => response.json()
-                    // );
-                    // .then(response => JSON.stringify(response));
-
-
-                    // console.log(JSON.stringify(responseJson));
-
-                    // console.log(responseJson)
-                    var weatherCode;
-                    var xmlhttp = new XMLHttpRequest();
-
-                    xmlhttp.onreadystatechange = function() {
-                        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {        
-                            //Parse the JSON data to a JavaScript variable. 
-                            parsedObj = JSON.parse(xmlhttp.responseText);  
-                            weatherCode = parsedObj.current_weather.weathercode;                            
-                            
-                            //print weatherCode to html
-                            // console.log(weatherCode);
-                            document.getElementById("weather-icon").innerHTML=weatherCode
-                        }
                     };
-                    xmlhttp.open("GET", weather_api, true);
-                    xmlhttp.send();
-
+                });
+            
+                distances.sort((a, b) => a.distance - b.distance);
+            
+                let nearestStations = distances.slice(0, 5).map((item) => markers[item.index]);
+            
+                return nearestStations;
+            }
+            
+            function showNearestStations(location, availability_data) {
+                let nearestStations = findNearestStations(location);
+                console.log(nearestStations); // log nearest stations to the console
+                let sidebar = document.getElementById("side-bar");
+                sidebar.style.height = '70%';
+                document.getElementById('close-icon').style.display = 'block';
+                let nearestStationsDiv = document.getElementById("nearest-stations");
+                nearestStationsDiv.innerHTML = "<h3>Nearest Stations:</h3>";
+                nearestStations.forEach((station) => {
+                    let stationDiv = document.createElement("div");
+                    stationDiv.innerHTML = `<h4>${station.title}</h4>
+                        <p><i class="material-icons" title="Status">info</i>: ${station.status}</p>
+                        <p><i class="material-icons" title="Available Bikes">directions_bike</i>: ${station.available_bikes}</p>
+                        <p><i class="material-icons" title="Available Stands">directions_walk</i>: ${station.bike_stands}</p>
+                        <p><i class="material-icons" title="Banking">${station.banking ? 'check_circle' : 'cancel'}</i>: ${station.banking ? 'Yes' : 'No'}</p>`;
+                    nearestStationsDiv.appendChild(stationDiv);
                 });
             }
+            
 
-            const input = document.getElementById("pac-input");            
-
+            
+            
+            
+            const input = document.getElementById("pac-input");
+            
             const autocomplete = new google.maps.places.Autocomplete(input);
-
-            // Bind the map's bounds (viewport) property to the autocomplete object,
-            // so that the autocomplete requests use the current map bounds for the
-            // bounds option in the request.
+            
             autocomplete.bindTo("bounds", map);
-
+            
             autocomplete.addListener("place_changed", () => {
-
-            const place = autocomplete.getPlace();
-            if (!place.geometry || !place.geometry.location) {
-                // User entered the name of a Place that was not suggested and
-                // pressed the Enter key, or the Place Details request failed.
-                window.alert("No details available for input: '" + place.name + "'");
-                return;
-            }
-            // If the place has a geometry, then present it on a map.
-            if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
-            } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);
-            }
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) {
+                    window.alert("No details available for input: '" + place.name + "'");
+                    return;
+                }
+            
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
+                }
+            
+                // Show nearest stations
+                showNearestStations(place.geometry.location, availability_data);
+                document.getElementById('side-bar').style.display = 'block';
             });
-        };
-        
-        var canvas = document.getElementById("temperature-chart");
-
-        function printDebug(){
-            console.log("Passed");
+            
         }
-
-        //var chart = new Chart(canvas, {
-        //    type: 'line',
-        //    data: {
-        //        labels: {{ hour_list|safe }},
-        //        datasets: [{
-        //            label: 'Temperature',
-        //            data: {{ temperature_list|safe }},
-        //            borderColor: 'blue',
-        //            fill: false
-        //        }]
-        //    },
-        //    options: {
-        //        scales: {
-        //            yAxes: [{
-        //                ticks: {
-        //                    beginAtZero: true
-        //                }
-        //           }]
-        //        }
-        //    }
-// });
     </script>
 </head>
 
@@ -170,33 +141,14 @@
                 <input id="pac-input" type="text" placeholder="Enter a location" />
             </form>
         </div>
-        <div id="side-info">
-            <div id="Station-information">
-              <h3 class="sidebar-label"><i class="sidebar-icon bike material-icons">directions_bike</i>Bike Sharing Stations</h3>
-              <iframe src="/data" frameborder="0" style="width: 100%; height: 100%;"></iframe>
-            </div>
-            <div id="weather">
-                <div id="weather-current">
-                    <div id="weather-icon"></div>
-                <div id="temperature"></div>
-                <div id=""></div>
-            </div>
-            <div id="weather-hour">
-                <canvas id="temperature-chart"></canvas>
-                <canvas id="precipitation-chart"></canvas>
-                <canvas id="wind-chart"></canvas>
-            </div>
-            </div>
-            <div id="station-history">
-              <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
-              <!-- Station history goes here -->
-            </div>
-            <div id="station-prediction"></div>
+        <div id="nearest-stations">
+            <!-- Nearest stations will be displayed here -->
         </div>
         <div id="close-side">
-            <i id="close-icon" class="material-icons" onclick="closeSide()" >&#xe316;</i>
+            <i id="close-icon" class="material-icons" onclick="closeSide()">remove</i>
         </div>
     </div>
     <div id="map"></div>
 </body>
+
 </html>

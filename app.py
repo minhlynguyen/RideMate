@@ -43,22 +43,29 @@ def index():
     query = 'SELECT * FROM station'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
-    weather_station = {}
+
+    # Fetch the latest available bikes data
+    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
+    availability_data = engine.connect().execute(text(availability_query)).fetchall()
+    availability_dict = {item[0]: item[1] for item in availability_data}
 
     # Set up the markers
     markers = []
     for station in stations:
+        available_bikes = availability_dict.get(station[0], 0)
         marker = {
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
             'weathercode': 10,
             'status': station[9],
-            'bike_stands': station[3]
+            'bike_stands': station[3],
+            'available_bikes': available_bikes
         }
         markers.append(marker)
 
     # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
+    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng, availability=availability_dict)
+
 
 
 @app.route('/data')
@@ -129,19 +136,25 @@ def get_lat(station_id):
         "SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
     return lat
 
+
 @app.route("/availability/daily/<int:station_id>")
 def get_availability_daily(station_id):
     engine = get_db()
-    df = pd.read_sql_query("SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
-    df ['last_update'] = pd.to_datetime(df.last_update, unit='s')
+    df = pd.read_sql_query(
+        "SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
+    df['last_update'] = pd.to_datetime(df.last_update, unit='s')
     df.set_index('last_update', inplace=True)
-    res = df[['available_bikes', 'available_bike_stands']].resample('1d').mean()
-    daily=jsonify(data=json.dumps(list(zip(map(lambda x:x.isoformat(), res.index),res.values.tolist()))))
-    return render_template("chart.html",daily=daily)
+    res = df[['available_bikes', 'available_bike_stands']
+             ].resample('1d').mean()
+    daily = jsonify(data=json.dumps(
+        list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
+    return render_template("chart.html", daily=daily)
+
 
 @app.route("/chart")
 def chart():
     return render_template("chart.html")
+
 
 @app.route('/weather')
 def weather():

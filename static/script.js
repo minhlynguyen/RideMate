@@ -1,6 +1,5 @@
 function closeSide() {
     document.getElementById('side-bar').style.height = '40px';
-    document.getElementById('side-info').style.display = 'none';
     document.getElementById('close-icon').style.display = 'none';
 }
 
@@ -11,3 +10,4 @@ map.addListener('mousemove', function (event) {
     var newLatLng = map.getProjection().fromPointToLatLng(pixelOffset);
     hoverInfo.setPosition(newLatLng);
 });
+
