@@ -20,7 +20,7 @@ body {
 
 #side-bar {
     z-index: 9;
-    width: 300px;
+    width: 400px;
     height: 40px;
     transition: 0.2s;
     /* on marker click */
@@ -72,13 +72,6 @@ input:focus-visible {
     outline: none;
 }
 
-#side-info {
-    display: none;
-    height: 90%;
-    margin-top: 10px;
-    flex-direction: column;
-}
-
 #close-side {
     width: 100%;
     position: absolute;
@@ -95,6 +88,17 @@ input:focus-visible {
     opacity: 0.6;
 }
 
+<<<<<<< HEAD
+#nearest-stations {
+    padding: 1rem;
+    font-size: 14px;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#nearest-stations div {
+=======
 #side-bar-right { 
     z-index: 1;
     width: 0px;
@@ -124,10 +128,22 @@ input:focus-visible {
 
 #weather-current{
     width: 100%;
+>>>>>>> main
     display: flex;
     flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease-in-out;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+<<<<<<< HEAD
+#nearest-stations div:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+=======
 #weather-hour{
     width: 100%;
     display: flex;
@@ -175,18 +191,20 @@ input:focus-visible {
 
 .sidebar-icon.weather {
     color: #f1c40f;
+>>>>>>> main
 }
 
-.sidebar-icon.clock {
-    color: #e74c3c;
+#nearest-stations h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 1rem 0 0;
+    flex-grow: 1;
 }
 
-.sidebar-label {
-    font-size: 18px;
-    margin-bottom: 10px;
+#nearest-stations p {
     margin: 0;
 }
 
-#weather_icon{
-    height: 100%;
+#nearest-stations p:not(:last-child) {
+    margin-right: 1rem;
 }
