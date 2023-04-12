@@ -3,15 +3,18 @@ import functools
 import json
 import time
 import traceback
-
 import googlemaps
 import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
 from sqlalchemy import text
-
 import config
 import database
+import pandas as pd
+import pickle
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -43,10 +46,12 @@ def index():
     query = 'SELECT * FROM station'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
+    weather_station = {}
 
     # Fetch the latest available bikes data
     availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
-    availability_data = engine.connect().execute(text(availability_query)).fetchall()
+    availability_data = engine.connect().execute(
+        text(availability_query)).fetchall()
     availability_dict = {item[0]: item[1] for item in availability_data}
 
     # Set up the markers
@@ -54,6 +59,7 @@ def index():
     for station in stations:
         available_bikes = availability_dict.get(station[0], 0)
         marker = {
+            'number': station[0],
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
             'weathercode': 10,
@@ -64,8 +70,7 @@ def index():
         markers.append(marker)
 
     # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng, availability=availability_dict)
-
+    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
 
 
 @app.route('/data')
@@ -81,8 +86,6 @@ def station_data():
         return render_template('data.html', search_results=search_results)
     else:
         return render_template('data.html')
-
-# From Lecture note: This code works, the one below /station doesn't work. Should we delete the one below?
 
 
 @app.route("/stations")
@@ -102,40 +105,6 @@ def get_stations():
         print(traceback.format_exc())
         return "error in get_stations", 404
 
-# From lecture note, working now. It's showing info of 1 station defined in the link
-
-
-@app.route("/available/<int:station_id>")
-def get_station(station_id):
-    engine = get_db()
-    data = []
-    rows = engine.execute(
-        "SELECT * from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    for row in rows:
-        data.append(dict(row))
-    return jsonify(available=data)
-
-# def new_func():
-#     return station_id
-
-# Function to get the longitude of the chosen station
-
-
-@app.route("/available/<int:station_id>")
-def get_lng(station_id):
-    engine = get_db()
-    lng = engine.execute(
-        "SELECT position_lng from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    return lng
-
-
-@app.route("/available/<int:station_id>")
-def get_lat(station_id):
-    engine = get_db()
-    lat = engine.execute(
-        "SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    return lat
-
 
 @app.route("/availability/daily/<int:station_id>")
 def get_availability_daily(station_id):
@@ -148,7 +117,7 @@ def get_availability_daily(station_id):
              ].resample('1d').mean()
     daily = jsonify(data=json.dumps(
         list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
-    return render_template("chart.html", daily=daily)
+    return daily
 
 
 @app.route("/chart")
@@ -156,16 +125,18 @@ def chart():
     return render_template("chart.html")
 
 
-@app.route('/weather')
-def weather():
-    LATITUDE = get_lat
-    LONGITUDE = get_lng
-    r = requests.get(config.WEATHER_URL, params={"latitude": 53.340927, "longitude": -6.262501, "hourly": config.HOURLY,
-                                                 "daily": config.DAILY, "current_weather": "true", "timeformat": "unixtime", "timezone": config.TIMEZONE})
-    r_text = json.loads(r.text)
-    weather = jsonify(available=r_text)
-    return weather
-    # return f'Weather information: {weather}'.format(weather)
+# filename = f'models/{int:station_id}.pkl'
+# with open(filename,'rb'') as handle:
+#     model = pickle.load(handle)
+filename = f'models_bikes/23.pkl'
+with open(filename, 'rb') as handle:
+    model = pickle.load(handle)
+
+
+@app.route("/predict_bikes")
+def predict():
+    result = model.predict([[22, 2, 0, 4.9, 0, 21.1]])
+    return round(list(result)[0])
 
 
 if __name__ == '__main__':
