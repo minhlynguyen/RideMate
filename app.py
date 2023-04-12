@@ -12,6 +12,7 @@ from sqlalchemy import text
 
 import config
 import database
+import pandas as pd
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -54,6 +55,7 @@ def index():
     for station in stations:
         available_bikes = availability_dict.get(station[0], 0)
         marker = {
+            'number': station[0],
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
             'weathercode': 10,
@@ -81,9 +83,7 @@ def station_data():
         return render_template('data.html', search_results=search_results)
     else:
         return render_template('data.html')
-
-# From Lecture note: This code works, the one below /station doesn't work. Should we delete the one below?
-
+    
 
 @app.route("/stations")
 @functools.lru_cache(maxsize=128)
@@ -102,6 +102,7 @@ def get_stations():
         print(traceback.format_exc())
         return "error in get_stations", 404
 
+<<<<<<< HEAD
 # From lecture note, working now. It's showing info of 1 station defined in the link
 
 
@@ -137,6 +138,8 @@ def get_lat(station_id):
     return lat
 
 
+=======
+>>>>>>> main
 @app.route("/availability/daily/<int:station_id>")
 def get_availability_daily(station_id):
     engine = get_db()
@@ -144,17 +147,24 @@ def get_availability_daily(station_id):
         "SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
     df['last_update'] = pd.to_datetime(df.last_update, unit='s')
     df.set_index('last_update', inplace=True)
+<<<<<<< HEAD
     res = df[['available_bikes', 'available_bike_stands']
              ].resample('1d').mean()
     daily = jsonify(data=json.dumps(
         list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
     return render_template("chart.html", daily=daily)
 
+=======
+    res = df[['available_bikes', 'available_bike_stands']].resample('1d').mean()
+    daily=jsonify(data=json.dumps(list(zip(map(lambda x:x.isoformat(), res.index),res.values.tolist()))))
+    return daily
+>>>>>>> main
 
 @app.route("/chart")
 def chart():
     return render_template("chart.html")
 
+<<<<<<< HEAD
 
 @app.route('/weather')
 def weather():
@@ -168,6 +178,8 @@ def weather():
     # return f'Weather information: {weather}'.format(weather)
 
 
+=======
+>>>>>>> main
 if __name__ == '__main__':
     app.run(debug=True)
 
