@@ -1,20 +1,21 @@
 # import mysql.connector
 import functools
 import json
+import pickle
 import time
 import traceback
+
 import googlemaps
+import numpy as np
+import pandas as pd
 import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
+from sklearn.linear_model import LinearRegression
 from sqlalchemy import text
+
 import config
 import database
-import pandas as pd
-import pickle
-import numpy as np
-from sklearn.linear_model import LinearRegression
-
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -70,7 +71,7 @@ def index():
         markers.append(marker)
 
     # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
+    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng, availability=availability_dict)
 
 
 @app.route('/data')
