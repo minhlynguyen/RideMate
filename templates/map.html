@@ -5,7 +5,7 @@
     <title>Map</title>
     <link rel="stylesheet" href="../static/style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,geometry,visualization"></script>
     <script src="../static/script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -220,6 +220,22 @@
                         });
                     };
                 });
+                var heatmapData = markers.map(function(marker) {
+                    return {
+                        location: new google.maps.LatLng(marker.position.lat, marker.position.lng),
+                        weight: marker.available_bikes
+                    };
+                });
+            
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData,
+                    dissipating: true,
+                    maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
+                    radius: 30, // Adjust the radius to change the appearance of the heatmap
+                    opacity: 0.5,
+                });
+            
+                heatmap.setMap(map);
             }
 
             const input = document.getElementById("pac-input");            
