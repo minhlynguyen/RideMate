@@ -15,7 +15,6 @@
     async function getData() {
       const url = '/availability/daily/9';
       const response = await fetch(url);
-      const { data } = await response.json();
       return JSON.parse(data);
     }
 
