@@ -43,7 +43,7 @@
                 
                 contentString = '<div><strong>' + markerData.title + '</strong>' +
                         // show availability info in the hover window                                           
-                        '<div><img src="../static/thermometer.png" height="20"></div>' +
+                        '<div><img src="../static/weather/' + markerData.weathercode + '.png" height="20"></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
                         '<div>Available stands: ' + markerData.bike_stands + '</div></div>'
                 
@@ -98,6 +98,7 @@
                         const url = '/availability/daily/'+markerData.number;
                         const response = await fetch(url);
                         const { data } = await response.json();
+                        console.log(JSON.parse(data));
                         return JSON.parse(data);
                     }
 

@@ -103,6 +103,7 @@ def get_availability_daily(station_id):
     df.set_index('last_update', inplace=True)
     res = df[['available_bikes', 'available_bike_stands']].resample('1d').mean()
     daily=jsonify(data=json.dumps(list(zip(map(lambda x:x.isoformat(), res.index),res.values.tolist()))))
+    df.head(5)
     return daily
 
 @app.route("/chart")
