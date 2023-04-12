@@ -12,6 +12,7 @@ from sqlalchemy import text
 
 import config
 import database
+import pandas as pd
 
 app = Flask(__name__)
 GoogleMaps(app, key=config.MAP_KEY)
@@ -49,6 +50,7 @@ def index():
     markers = []
     for station in stations:
         marker = {
+            'number': station[0],
             'position': {'lat': station[7], 'lng': station[8]},
             'title': station[6],
             'weathercode': 10,
@@ -74,9 +76,7 @@ def station_data():
         return render_template('data.html', search_results=search_results)
     else:
         return render_template('data.html')
-
-# From Lecture note: This code works, the one below /station doesn't work. Should we delete the one below?
-
+    
 
 @app.route("/stations")
 @functools.lru_cache(maxsize=128)
@@ -95,40 +95,6 @@ def get_stations():
         print(traceback.format_exc())
         return "error in get_stations", 404
 
-# From lecture note, working now. It's showing info of 1 station defined in the link
-
-
-@app.route("/available/<int:station_id>")
-def get_station(station_id):
-    engine = get_db()
-    data = []
-    rows = engine.execute(
-        "SELECT * from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    for row in rows:
-        data.append(dict(row))
-    return jsonify(available=data)
-
-# def new_func():
-#     return station_id
-
-# Function to get the longitude of the chosen station
-
-
-@app.route("/available/<int:station_id>")
-def get_lng(station_id):
-    engine = get_db()
-    lng = engine.execute(
-        "SELECT position_lng from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    return lng
-
-
-@app.route("/available/<int:station_id>")
-def get_lat(station_id):
-    engine = get_db()
-    lat = engine.execute(
-        "SELECT position_lat from availability where number = {} order by last_update DESC LIMIT 1;".format(station_id))
-    return lat
-
 @app.route("/availability/daily/<int:station_id>")
 def get_availability_daily(station_id):
     engine = get_db()
@@ -137,23 +103,11 @@ def get_availability_daily(station_id):
     df.set_index('last_update', inplace=True)
     res = df[['available_bikes', 'available_bike_stands']].resample('1d').mean()
     daily=jsonify(data=json.dumps(list(zip(map(lambda x:x.isoformat(), res.index),res.values.tolist()))))
-    return render_template("chart.html",daily=daily)
+    return daily
 
 @app.route("/chart")
 def chart():
     return render_template("chart.html")
-
-@app.route('/weather')
-def weather():
-    LATITUDE = get_lat
-    LONGITUDE = get_lng
-    r = requests.get(config.WEATHER_URL, params={"latitude": 53.340927, "longitude": -6.262501, "hourly": config.HOURLY,
-                                                 "daily": config.DAILY, "current_weather": "true", "timeformat": "unixtime", "timezone": config.TIMEZONE})
-    r_text = json.loads(r.text)
-    weather = jsonify(available=r_text)
-    return weather
-    # return f'Weather information: {weather}'.format(weather)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
