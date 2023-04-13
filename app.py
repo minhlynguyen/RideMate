@@ -44,34 +44,26 @@ lng = geocode_result[0]["geometry"]["location"]["lng"]
 def index():
 
     # Fetch the station data from the MySQL database
-    query = 'SELECT * FROM station'
+    query = 'SELECT * FROM station_update'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
-    weather_station = {}
-
-    # Fetch the latest available bikes data
-    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
-    availability_data = engine.connect().execute(
-        text(availability_query)).fetchall()
-    availability_dict = {item[0]: item[1] for item in availability_data}
 
     # Set up the markers
     markers = []
     for station in stations:
-        available_bikes = availability_dict.get(station[0], 0)
+        # available_bikes = availability_dict.get(station[0], 0)
         marker = {
             'number': station[0],
-            'position': {'lat': station[7], 'lng': station[8]},
-            'title': station[6],
-            'weathercode': 10,
-            'status': station[9],
-            'bike_stands': station[3],
-            'available_bikes': available_bikes
+            'position': {'lat': station[2], 'lng': station[3]},
+            'title': station[1],
+            'status': station[8],
+            'bike_stands': station[7],
+            'available_bikes': station[6]
         }
         markers.append(marker)
 
     # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng, availability=availability_dict)
+    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
 
 
 @app.route('/data')
