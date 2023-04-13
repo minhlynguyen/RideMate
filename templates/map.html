@@ -352,6 +352,26 @@
         function printDebug(){
             console.log("Passed");
         }
+
+        function openWeather(evt, weatherStat) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            defaultButton = document.getElementById("default-button");
+            if(defaultButton.style.border !== "none"){
+                defaultButton.style.border = "none";
+            }else{
+                defaultButton.style.borderBottomStyle = "#33CCCC 2px solid";
+            };
+            document.getElementById(weatherStat).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
         
     </script>
 </head>
@@ -388,9 +408,14 @@
                 <div id=""></div>
             </div>
             <div id="weather-hour">
-                <div id="temperature-chart"></div>
-                <div id="precipitation-chart"></div>
-                <div id="wind-chart"></div>
+                <div class="tab">
+                    <button id="default-button" class="tablinks" onclick="openWeather(event, 'temperature-chart')">Temperature(&#8451;)</button>
+                    <button class="tablinks" onclick="openWeather(event, 'precipitation-chart')">Precipitation(%)</button>
+                    <button class="tablinks" onclick="openWeather(event, 'wind-chart')">Windspeed(km/h)</button>
+                </div>
+                <div id="temperature-chart" class="tabcontent"></div>
+                <div id="precipitation-chart" class="tabcontent"></div>
+                <div id="wind-chart" class="tabcontent"></div>
             </div>
             <div id="station-history">
                 <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>

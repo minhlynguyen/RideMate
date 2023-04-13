@@ -5,7 +5,7 @@ function closeSide() {
 }
 
 function closeSideRight(){
-    document.getElementById('side-bar-right').style.width = '0px';
+    document.getElementById('side-bar-right').style.display = 'none';
 }
 
 //map.addListener('mousemove', function (event) {
