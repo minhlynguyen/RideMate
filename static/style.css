@@ -6,8 +6,12 @@ body {
     height: 100%;
     margin: 0;
     display: flex;
-    font-size: 12px;
+    font: 12px Roboto, Arial, sans-serif;
     position: relative;
+}
+
+p{
+    margin: 0;
 }
 
 #map {
@@ -104,9 +108,6 @@ input:focus-visible {
     height: 100%;
     border: 0;
     padding: 0 0.5em;
-    font: 400 18px Roboto, Arial, sans-serif;
-    font-family: Roboto;
-    padding: 0;
     box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
     background-color: #fff;
     border-radius: 10px;
@@ -126,6 +127,7 @@ input:focus-visible {
     width: 100%;
     display: flex;
     flex-direction: row;
+    margin: 10px 0;
 }
 
 #weather-hour{
