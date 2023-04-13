@@ -51,7 +51,6 @@ def index():
     # Set up the markers
     markers = []
     for station in stations:
-        # available_bikes = availability_dict.get(station[0], 0)
         marker = {
             'number': station[0],
             'position': {'lat': station[2], 'lng': station[3]},
