@@ -76,74 +76,6 @@
                         return JSON.parse(data);
                     }
 
-                    function calculateWeeklyAverage_bikes(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                            currentWeek[dayIndex] += availability[0];
-                            count++;
-                            dayIndex++;
-                            dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        return weeklyData.slice(1);
-                    }
-
-                    function calculateWeeklyAverage_bike_stands(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                        currentWeek[dayIndex] += availability[1];
-                        count++;
-                        dayIndex++;
-                        dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        
-
-                        return weeklyData.slice(1);
-                    }
-
                     async function drawChart() {
                         const data = await getData();
                         const weeklyData_bikes = calculateWeeklyAverage_bikes(data);
@@ -351,7 +283,7 @@
                 }
             
                 // Show nearest stations
-                showNearestStations(place.geometry.location, availability_data);
+                showNearestStations(place.geometry.location);
                 document.getElementById('side-bar').style.display = 'block';
             });
         
@@ -379,7 +311,7 @@
                 return nearestStations;
             }
 
-            function showNearestStations(location, availability_data) {
+            function showNearestStations(location) {
                 let nearestStations = findNearestStations(location);
                 console.log(nearestStations); // log nearest stations to the console
                 let sidebar = document.getElementById("side-bar");
