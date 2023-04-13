@@ -27,6 +27,9 @@
 
             var markers = {{ markers| tojson }};
             console.log(markers);  // Print the markers array in the console
+            
+            var mapMarkers = [];
+
 
             for (var i = 0; i < markers.length; i++) {
                 var marker = markers[i];
@@ -35,9 +38,12 @@
                     title: marker.title,
                     map: map
                 });
+                // Add the new marker to the mapMarkers array
+                mapMarkers.push(newMarker);
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
             }
+            
 
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
@@ -328,19 +334,20 @@
                         <p><i class="material-icons" title="Banking">${station.banking ? 'check_circle' : 'cancel'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
                     stationDiv.style.cursor = 'pointer';
                     stationDiv.addEventListener('click', () => {
-                        let marker = markers.find(m => m.number === station.number);
-                        let newMarker = new google.maps.Marker({
-                            position: marker.position,
-                            title: marker.title,
-                            map: map
-                        });
-                        newMarker.setAnimation(google.maps.Animation.BOUNCE);
-                        setTimeout(() => { newMarker.setAnimation(null); }, 750);
-                    });                    
+                        let marker = mapMarkers.find(m => m.title === station.title);
+                    
+                        // Make the existing marker bounce
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(() => { marker.setAnimation(null); }, 750);
+                    });
+                    
                     nearestStationsDiv.appendChild(stationDiv);
                 });
             }
 
+
+            
+            
             google.maps.event.addListenerOnce(map, 'idle', () => {
                 document.getElementById('loading').style.display = 'none';
             });
