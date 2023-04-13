@@ -7,6 +7,7 @@ function closeSideRight() {
     document.getElementById('side-bar-right').style.width = '0px';
 }
 
+
 //map.addListener('mousemove', function (event) {
 //    var pixelOffset = map.getProjection().fromLatLngToPoint(event.latLng);
 //    pixelOffset.x += 10;
