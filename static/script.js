@@ -18,12 +18,6 @@ function openWeather(evt, weatherStat) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    defaultButton = document.getElementById("default-button");
-    if(defaultButton.style.border !== "none"){
-        defaultButton.style.border = "none";
-    }else{
-        defaultButton.style.borderBottomStyle = "#33CCCC 2px solid";
-    };
     document.getElementById(weatherStat).style.display = "block";
     evt.currentTarget.className += " active";
 }

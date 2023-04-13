@@ -227,12 +227,8 @@ input:focus-visible {
     font: 12px Roboto, Arial, sans-serif;
 }
 
-#default-button{
-    border-bottom: #33CCCC 2px solid;
-}
-
 /* Change background color of buttons on hover */
-.tab button:hover {
+.tab button:hover #default-button:hover{
     border-bottom: #33CCCC 2px solid;
 }
 
