@@ -301,15 +301,34 @@
                         <p><i class="material-icons" title="Available Bikes">directions_bike</i>${station.available_bikes}</p>
                         <p><i class="material-icons" title="Available Stands">directions_walk</i>${station.bike_stands}</p>
                         <p><i class="material-icons" title="Banking">${station.banking ? 'check_circle' : 'cancel'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
+                    stationDiv.style.cursor = 'pointer';
+                    stationDiv.addEventListener('click', () => {
+                        let marker = markers.find(m => m.number === station.number);
+                        let newMarker = new google.maps.Marker({
+                            position: marker.position,
+                            title: marker.title,
+                            map: map
+                        });
+                        newMarker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(() => { newMarker.setAnimation(null); }, 750);
+                    });                    
                     nearestStationsDiv.appendChild(stationDiv);
                 });
             }
+
+            google.maps.event.addListenerOnce(map, 'idle', () => {
+                document.getElementById('loading').style.display = 'none';
+            });
+            
         };
     </script>
 </head>
 
 <body onload="initMap()">
     {# If possible, please keep the html id and CSS like this #}  
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
     <div id="side-bar">
         <div id="pac-container">
             <form id="pac-form">
