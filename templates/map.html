@@ -39,8 +39,6 @@
                 attachInfoWindow(newMarker, map, marker);
             }
 
-            var availability_data = {{ availability| tojson }};
-
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
                     content: '<div><strong>' + markerData.title + '</strong>' +
