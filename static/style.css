@@ -210,7 +210,7 @@ input:focus-visible {
 }
 
 /* Style the tab */
-.tab {
+.tab .tabchart{
     overflow: hidden;
 }
 
@@ -227,14 +227,36 @@ input:focus-visible {
     font: 12px Roboto, Arial, sans-serif;
 }
 
+.tabchart button {
+    background-color: inherit;
+    float: left;
+    border: white;
+    outline: none;
+    cursor: pointer;
+    padding: 3px 0px;
+    margin: 3px 5px;
+    transition: 0.05s;
+    font: 12px Roboto, Arial, sans-serif;
+}
+
 /* Change background color of buttons on hover */
 .tab button:hover #default-button:hover{
     border-bottom: #FF4500 2px solid;
 }
 
+.tabchart button:hover #default-button:hover{
+    border-bottom: #33cccc 2px solid;
+}
+
+
 /* Create an active/current tablink class */
 .tab button.active {
     border-bottom: #FF4500 2px solid;
+}
+
+/* Create an active/current tablink class */
+.tabchart button.active {
+    border-bottom: #33cccc 2px solid;
 }
 
 /* Style the tab content */
@@ -253,23 +275,23 @@ input:focus-visible {
     justify-content: center;
 }
 
-#daily-average{
+.average-chart{
     width: 100%;
-    display: flex;
+    display: none;
     justify-content: center;
     height: 200px;
 }
 
-#load-chart{
+#daily-average{
+    display: flex;
+}
+
+.load-chart{
+    height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-#weekly-chart-bike, #weeky-chart-bike_stands{
-    display: block;
-    height: 175px;
-    width: 300px;
+    background-color: rgba(255, 255, 255, 0.2);;
 }
 
 #close-side-right {

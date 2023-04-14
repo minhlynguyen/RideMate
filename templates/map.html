@@ -76,6 +76,7 @@
                     // Showing station average chart
                     google.charts.load('current', {'packages':['corechart']});
                     google.charts.setOnLoadCallback(drawDaily(markerData.number));
+                    google.charts.setOnLoadCallback(drawHourly(markerData.number));
                     google.charts.setOnLoadCallback(drawTemperature(markerData.position.lat,markerData.position.lng));
                 });
 
@@ -242,7 +243,12 @@
                 
             </div>
             <div id="station-history">
-                <div id="daily-average"></div>
+                <div class="tabchart">
+                    <button class="charttablinks active" onclick="openChart(event, 'daily-average')">By day of week</button>
+                    <button class="charttablinks" onclick="openChart(event, 'hourly-average')">By hour </button>
+                </div>
+                <div class="average-chart active" id="daily-average"></div>
+                <div class="average-chart" id="hourly-average"></div>
             </div>
             <div id="station-prediction">
                 <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">my_location</i>Station Prediction</h3>

@@ -22,6 +22,20 @@ function openWeather(evt, weatherStat) {
     evt.currentTarget.className += " active";
 }
 
+function openChart(evt, availabilityStat) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("average-chart");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("charttablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(availabilityStat).style.display = "flex";
+    evt.currentTarget.className += " active";
+}
+
 function weatherUrl(lat,lng){
     var weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude="+lat+
     "&longitude="+lng+
@@ -140,15 +154,15 @@ function drawTemperature(lat,lng) {
     });                         
 } 
 
-// Draw daily average chart of Temperature, Precipitation, And Windspeed
+// Draw daily average chart of availability
 function drawDaily(station){
-    url = "/available/"+station;
-    let loader = `<div id="load-chart"><div class="spinner"></div></div>`;
+    url = "/daily/"+station;
+    let loader = `<div class="load-chart"><div class="spinner"></div></div>`;
     document.getElementById('daily-average').innerHTML = loader;
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var dayAverageData = [['Day of week', 'Average daily available bikes', 'Average daily free stands']];
+        var dayAverageData = [['Day of week', 'Average available bikes', 'Average free stands']];
         for (var i = 0; i < data.length; i++){
             var datapoint = [data[i]['day_name'],data[i]['avg_bikes'],data[i]['avg_stands']];
             dayAverageData.push(datapoint);
@@ -163,7 +177,10 @@ function drawDaily(station){
             width: 350,
             height: 200,
             seriesType: 'bars',
-            legend:{position: 'top', textStyle: {fontSize: 9} },
+            legend: {
+                position: 'top', 
+                maxLines: 2,
+                textStyle: {fontSize: 9}},
             series: {
                 0: { color: '#003fff'},
                 1: { color: '#00ffff' }        
@@ -178,5 +195,54 @@ function drawDaily(station){
 
     var dayChart = new google.visualization.ComboChart(document.getElementById('daily-average'));
     dayChart.draw(dayData, options);
+    })
+}
+
+// Draw daily average chart of availability
+function drawHourly(station){
+    url = "/hourly/"+station;
+    let loader = `<div class="load-chart"><div class="spinner"></div></div>`;
+    document.getElementById('hourly-average').innerHTML = loader;
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        var hourAverageData = [['Hour', 'Average available bikes on '+data[0]['day_name'] +'s', 'Average free stands on ' + data[0]['day_name'] +'s']];
+        for (var i = 0; i < data.length; i++){
+            var datapoint = [data[i]['hour'],data[i]['avg_bikes'],data[i]['avg_stands']];
+            hourAverageData.push(datapoint);
+        }
+        console.log(hourAverageData);                        
+        var hourData = google.visualization.arrayToDataTable(hourAverageData);
+
+        var options = {
+            chartArea: {
+                width: '85%'
+            },
+            isStacked: "true",
+            width: 350,
+            height: 200,
+            seriesType: 'bars',
+            legend: {
+                position: 'top', 
+                maxLines: 2, 
+                textStyle: {fontSize: 9}},
+            series: {
+                0: { color: '#003fff'},
+                1: { color: '#00ffff' }        
+            },
+            vAxis: {
+                minValue: 0,
+                gridlines: {
+                    color: 'transparent'
+                }
+
+            },
+            hAxis:{
+                baselineColor: 'transparent'
+            }
+        };
+
+    var hourChart = new google.visualization.ComboChart(document.getElementById('hourly-average'));
+    hourChart.draw(hourData, options);
     })
 }
