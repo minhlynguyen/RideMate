@@ -3,6 +3,7 @@ import functools
 import json
 import pickle
 import time
+import datetime
 import traceback
 
 import googlemaps
@@ -47,6 +48,16 @@ def index():
     query = 'SELECT * FROM station_update'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
+<<<<<<< HEAD
+    weather_station = {}
+
+    # Fetch the latest available bikes data
+    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
+    availability_data = engine.connect().execute(
+        text(availability_query)).fetchall() 
+    availability_dict = {item[0]: item[1] for item in availability_data}
+=======
+>>>>>>> main
 
     # Set up the markers
     markers = []
@@ -69,7 +80,7 @@ def index():
 def station_data():
     engine = get_db()
     query = 'SELECT * FROM station'
-    data = engine.connect().execute(text(query)).fetchall()
+    data = engine.connectstation_data().execute(text(query)).fetchall()
     query = request.args.get('query')
     filter_criteria = request.args.get('filter')
     if query and filter_criteria:
@@ -92,7 +103,8 @@ def get_stations():
             print('#found {} stations', len(rows), rows, flush=True)
             # app.logger.info('#found {} stations', len(rows), rows) #Another way to print
             # use this formula to turn the rows into a list of dicts
-            return jsonify([row._asdict() for row in rows])
+            get_stations = jsonify([row._asdict() for row in rows])
+            return get_stations
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
@@ -126,18 +138,30 @@ def chart():
     return render_template("chart.html")
 
 
-# filename = f'models/{int:station_id}.pkl'
-# with open(filename,'rb'') as handle:
-#     model = pickle.load(handle)
-filename = f'models_bikes/23.pkl'
-with open(filename, 'rb') as handle:
-    model = pickle.load(handle)
-
-
-@app.route("/predict_bikes")
-def predict():
-    result = model.predict([[22, 2, 0, 4.9, 0, 21.1]])
-    return round(list(result)[0])
+@app.route("/predict_bikes/<int:station_id>")
+def predict_id(station_id):
+    filename = 'models_bikes/'+str(station_id)+'.pkl'
+    with open(filename, 'rb') as handle:
+        model = pickle.load(handle)
+    
+    for i in get_stations().json:
+        if i['number'] == station_id:
+            lat = i['position_lat']
+            lng = i['position_lng']
+    LATITUDE = lat
+    LONGITUDE = lng
+    req = requests.get(config.WEATHER_URL, params={"latitude": LATITUDE, "longitude": LONGITUDE, "current_weather": "true", "timeformat": "unixtime", "timezone": config.TIMEZONE})
+    data = req.json()
+    temperature = data["current_weather"]["temperature"]
+    weathercode = data["current_weather"]["weathercode"]
+    windspeed = data["current_weather"]["windspeed"]
+    day_of_week = datetime.datetime.now().isoweekday()
+    # is_holiday = 0
+    res = {}
+    for i in range(1, 25):
+        result = model.predict([[i, day_of_week, 0, temperature, weathercode, windspeed]])
+        res[i] = int(result[0])
+    return res
 
 
 if __name__ == '__main__':
