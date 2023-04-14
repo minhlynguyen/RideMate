@@ -1,15 +1,11 @@
-# import mysql.connector
 import functools
-import json
 import pickle
 import time
 import datetime
 import traceback
-
+import requests
 import googlemaps
 import numpy as np
-import pandas as pd
-import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
 from sklearn.linear_model import LinearRegression
@@ -48,16 +44,6 @@ def index():
     query = 'SELECT * FROM station_update'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
-<<<<<<< HEAD
-    weather_station = {}
-
-    # Fetch the latest available bikes data
-    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
-    availability_data = engine.connect().execute(
-        text(availability_query)).fetchall() 
-    availability_dict = {item[0]: item[1] for item in availability_data}
-=======
->>>>>>> main
 
     # Set up the markers
     markers = []
@@ -108,20 +94,6 @@ def get_stations():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-
-
-@app.route("/availability/daily/<int:station_id>")
-def get_availability_daily(station_id):
-    engine = get_db()
-    df = pd.read_sql_query(
-        "SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
-    df['last_update'] = pd.to_datetime(df.last_update, unit='s')
-    df.set_index('last_update', inplace=True)
-    res = df[['available_bikes', 'available_bike_stands']
-             ].resample('1d').mean()
-    daily = jsonify(data=json.dumps(
-        list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
-    return daily
 
 @app.route("/available/<int:station_id>")
 def get_station(station_id):

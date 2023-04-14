@@ -171,8 +171,8 @@ input:focus-visible {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #3498db;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
 }
 
@@ -250,6 +250,20 @@ input:focus-visible {
     width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+}
+
+#daily-average{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 200px;
+}
+
+#load-chart{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #weekly-chart-bike, #weeky-chart-bike_stands{

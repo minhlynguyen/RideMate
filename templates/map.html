@@ -5,17 +5,18 @@
     <title>Map</title>
     <link rel="stylesheet" href="../static/style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,geometry,visualization"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&&callback=Function.prototype&libraries=places,geometry,visualization"></script>
     <script src="../static/script.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <script>
         // Google Map API function
-        function initMap() {
+        async function initMap() {
 
+            const { Map } = await google.maps.importLibrary("maps");
             // Set up the map options. Used in javascript to control position of the mapTypeControl       
-            var map = new google.maps.Map(document.getElementById('map'), {
+            var map = new Map(document.getElementById('map'), {
                 zoom: 15,
                 center: { lat: {{ lat }}, lng: {{ lng }}},
                 mapTypeControl: true,
@@ -68,341 +69,16 @@
                     document.getElementById('side-bar-right').style.width= '350px';
                     document.getElementById('side-bar-right').style.display = 'flex';
                     document.getElementById('close-icon-right').style.display = 'block';
+                    
+                    // Showing current weather
+                    currentWeather(markerData.position.lat,markerData.position.lng);
+
                     // Showing station average chart
                     google.charts.load('current', {'packages':['corechart']});
-                    google.charts.setOnLoadCallback(drawDaily);
-                    google.charts.setOnLoadCallback(drawTemperature);
-
-                    // Functions to draw station average chart    
-<<<<<<< HEAD
-                    async function getData() {
-                        const url = '/availability/daily/'+markerData.number;
-                        const response = await fetch(url);
-                        const { data } = await response.json();
-                        console.log(JSON.parse(data));
-                        return JSON.parse(data);
-                    }
-
-                    function calculateWeeklyAverage_bikes(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                            currentWeek[dayIndex] += availability[0];
-                            count++;
-                            dayIndex++;
-                            dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        return weeklyData.slice(1);
-                    }
-
-                    function calculateWeeklyAverage_bike_stands(data) {
-                        const weeklyData = [[0, 0, 0, 0, 0, 0, 0]];
-                        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        let currentWeek = weeklyData[0];
-                        let count = 0;
-                        let dayIndex = 0;
-
-                        for (let i = 0; i < data.length; i++) {
-                            const [dateString, availability] = data[i];
-                            const date = new Date(dateString);
-                            const dayOfWeek = daysOfWeek[date.getDay()];
-        
-                            if (dayOfWeek === 'Sun' && count > 0) {
-                                currentWeek[dayIndex] /= count;
-                                currentWeek = [0, 0, 0, 0, 0, 0, 0];
-                                weeklyData.push(currentWeek);
-                                count = 0;
-                                dayIndex = 0;
-                            }
-        
-                        currentWeek[dayIndex] += availability[1];
-                        count++;
-                        dayIndex++;
-                        dayIndex %= 7;
-                        }
-
-                        if (count > 0) {
-                            currentWeek[dayIndex] /= count;
-                        }
-
-                        
-
-                        return weeklyData.slice(1);
-                    }
-
-
-                    async function drawChart() {
-                        const data = await getData();
-                        const weeklyData_bikes = calculateWeeklyAverage_bikes(data);
-                        const weeklyData_bike_stands = calculateWeeklyAverage_bike_stands(data);
-      
-                        const ctx = document.getElementById('weekly-chart-bikes');
-                        const chart = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bikes',
-                                    backgroundColor: 'rgba(255, 26, 104, 0.2)',
-                                    borderColor: 'rgba(255, 26, 104, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bikes.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-
-                        const ctx2 = document.getElementById('weekly-chart-bike_stands');
-                        const chart2 = new Chart(ctx2, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bike Stands',
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bike_stands.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-                    };
-
-                    //Get the result of modle: station availability prediction 
-                    async function getPredicData() {
-                        const url_predict = '/predict_bikes/'+markerData.number;
-                        const response_predict = await fetch(url_predict);
-                        const data_predict  = await response_predict.json();
-                        return data_predict;
-                    }
-
-                    function search(searchTerm, data) {
-                        return data[parseInt(searchTerm)];
-                    }
-
-                    document.getElementById('search-form').addEventListener('submit', async function(event) {
-                        event.preventDefault();
-
-                        const searchTerm = document.getElementById('search_term').value;
-                        const data = await getPredicData();
-                        const result = search(searchTerm,data);
-                        let resultHTML = '';
-
-                        if (result) {
-                            resultHTML = `
-                            <div>
-                                <h1><i class="material-icons" title="Available Bikes">pedal_bike</i>${result}</h1>
-                            </div>
-                            `;
-
-                        } else {
-                            resultHTML = '<p>No results found.</p>';
-                        }
-
-                        document.getElementById('search-results').innerHTML = resultHTML;
-                        });
-
-
-
-=======
->>>>>>> main
-                    // Make a request to the Open Meteo API to get the weather
-                    var weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude="+markerData.position.lat+
-                        "&longitude="+markerData.position.lng+
-                        "&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m"+
-                        "&daily=weathercode,temperature_2m_max,temperature_2m_min"+
-                        "&current_weather=true&timeformat=unixtime&timezone=Europe/London";
-
-                    // Extract the current weather from the JSON object
-                    fetch(weatherUrl)
-                    .then(response => response.json())
-                    .then(data => data.current_weather) 
-                    .then(data => {
-                        //User weather code to show the corresponding image
-                        var weatherCode = data.weathercode;
-                        console.log("Weather Code: " + weatherCode);
-                        var weatherCodeOut ='<img src="../static/weather/' + weatherCode + '.png" height="30">';
-                        document.getElementById('weather-icon').innerHTML = weatherCodeOut;
-
-                        //Show weather text (temperature, windspeed)
-                        var temperature = data.temperature;
-                        var windSpeed = data.windspeed;
-                        console.log("Temperature: " + temperature);
-                        var weatherTextOut = '<p>Temperature: '+temperature+'&#8451;</p>'+
-                                            '<p>Windspeed: '+windSpeed+' km/h</p>';
-                        document.getElementById('weather-text').innerHTML = weatherTextOut;
-                    }); 
-
-                    // Draw chart of Temperature, Precipitation, And Windspeed
-
-                    function drawTemperature() {
-                        // const data = await getWeather();
-                        fetch(weatherUrl)
-                        .then(response => response.json())
-                        .then(data => data.hourly) 
-                        .then(data => {
-                            // Get times from API
-                            var times = data.time;
-
-                            // Get temperature, precipitation, and windspeed
-                            var temperatures = data.temperature_2m;
-                            var precipitations = data.precipitation_probability;
-                            var windspeeds = data.windspeed_10m;
-
-                            // Headings for data to pass into google chart
-                            var tempChartData = [['Time','Temperature']];
-                            var preciChartData = [['Time','Precipitation']];
-                            var windChartData = [['Time','Wind Speed']];
-                            
-                            // Only show future data
-                            for(var i = 0; i < times.length; i++){
-                                if(times[i] >= Math.floor(Date.now() / 1000)){
-                                    const timeToDate = new Date(times[i] * 1000); // convert Unix timestamp to milliseconds and create Date object
-                                    // Add temperature to the temperature data array
-                                    var tempdatapoint = [timeToDate,temperatures[i]];
-                                    tempChartData.push(tempdatapoint);
-                                    // Add precipitation to the precipitations data array
-                                    var precidatapoint = [timeToDate,precipitations[i]];
-                                    preciChartData.push(precidatapoint);
-                                    // Add windspeed to the windspeed data array
-                                    var winddatapoint = [timeToDate,windspeeds[i]];
-                                    windChartData.push(winddatapoint);
-                                }
-                            }
-
-                            console.log(tempChartData);
-                            console.log(preciChartData);
-                            console.log(windChartData);
-
-                            // Create google data tables from 3 data arrays
-                            var tempData = google.visualization.arrayToDataTable(tempChartData);
-                            var preciData = google.visualization.arrayToDataTable(preciChartData);
-                            var windData = google.visualization.arrayToDataTable(windChartData);
-
-                            // Format the charts
-                            var options = {
-                                chartArea: {
-                                    width: '85%'
-                                },
-                                hAxis: {
-                                    viewWindow: {
-                                        min: new Date(Date.now()),
-                                        max: new Date(Date.now()+24*60*60*1000)
-                                    },
-                                    gridlines: {
-                                        count: -1,
-                                        units: {
-                                            days: {format: ['MMM dd']},
-                                            hours: {format: ['HH:mm', 'ha']},
-                                            },
-                                        color: '#fff'
-                                    },
-                                    baselineColor:'#fff'
-                                },
-                                vAxis: {
-                                    minValue: 0,
-                                    gridlines: {
-                                        color: '#fff'
-                                    },
-                                },
-                                width:350,
-                                height:150,
-                                legend: 'none',
-                                series: {
-                                    0: { color: '#FF4500' }
-                                }
-                            };
-
-                            // Draw the charts
-                            var tempChart = new google.visualization.AreaChart(document.getElementById('temperature-chart'));
-                            tempChart.draw(tempData, options);
-
-                            var preciChart = new google.visualization.ColumnChart(document.getElementById('precipitation-chart'));
-                            preciChart.draw(preciData, options);
-
-                            var windChart = new google.visualization.LineChart(document.getElementById('wind-chart'));
-                            windChart.draw(windData, options);
-                        });                         
-                    } 
-
-                    function drawDaily(){
-                        url = "/available/"+markerData.number;
-                        fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            var dayAverageData = [['Day of week', 'Average daily available bikes', 'Average daily free stands']];
-                            for (var i = 0; i < data.length; i++){
-                                var datapoint = [data[i]['day_name'],data[i]['avg_bikes'],data[i]['avg_stands']];
-                                dayAverageData.push(datapoint);
-                            }
-                            console.log(dayAverageData);                        
-                            var dayData = google.visualization.arrayToDataTable(dayAverageData);
-
-                            var options = {
-                                chartArea: {
-                                    width: '85%'
-                                },
-                                width: 350,
-                                height: 200,
-                                seriesType: 'bars',
-                                legend:{position: 'top', textStyle: {fontSize: 9} },
-                                series: {
-                                    0: { color: '#003fff'},
-                                    1: { color: '#00ffff' }        
-                                },
-                                vAxis: {
-                                    minValue: 0,
-                                    gridlines: {
-                                        color: '#fff'
-                                    }
-                                },
-                            };
-
-                        var dayChart = new google.visualization.ComboChart(document.getElementById('daily-average'));
-                        dayChart.draw(dayData, options);
-                        })
-                    }
-
-
+                    google.charts.setOnLoadCallback(drawDaily(markerData.number));
+                    google.charts.setOnLoadCallback(drawTemperature(markerData.position.lat,markerData.position.lng));
                 });
+
                 var heatmapData = markers.map(function(marker) {
                     return {
                         location: new google.maps.LatLng(marker.position.lat, marker.position.lng),
@@ -415,23 +91,23 @@
                     dissipating: true,
                     gradient: [
                         "rgba(0, 255, 255, 0)", 
-                        "rgba(0, 255, 255, 1)", 
-                        "rgba(0, 191, 255, 1)", 
-                        "rgba(0, 127, 255, 1)", 
-                        "rgba(0, 63, 255, 1)", 
-                        "rgba(0, 0, 255, 1)",
-                        "rgba(0, 0, 223, 1)",
-                        "rgba(0, 0, 191, 1)",
-                        "rgba(0, 0, 159, 1)",
-                        "rgba(0, 0, 127, 1)",
-                        "rgba(63, 0, 91, 1)",
-                        "rgba(127, 0, 63, 1)",
-                        "rgba(191, 0, 31, 1)",
-                        "rgba(255, 0, 0, 1)",
+                        "rgba(0, 255, 255, 0.5)", 
+                        "rgba(0, 191, 255, 0.5)", 
+                        "rgba(0, 127, 255, 0.5)", 
+                        "rgba(0, 63, 255, 0.5)", 
+                        "rgba(0, 0, 255, 0.5)",
+                        "rgba(0, 0, 223, 0.5)",
+                        "rgba(0, 0, 191, 0.5)",
+                        "rgba(0, 0, 159, 0.5)",
+                        "rgba(0, 0, 127, 0.5)",
+                        "rgba(63, 0, 91, 0.5)",
+                        "rgba(127, 0, 63, 0.5)",
+                        "rgba(191, 0, 31, 0.5)",
+                        "rgba(255, 0, 0, 0.5)",
                     ],
                     maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
                     radius: 30, // Adjust the radius to change the appearance of the heatmap
-                    opacity: 0.5,
+                    //opacity: 0.5,
                 });
             
                 heatmap.setMap(map);
@@ -462,9 +138,6 @@
                 document.getElementById('side-bar').style.display = 'block';
             });
         
-        
-        // var canvas = document.getElementById("temperature-chart");
-
             function printDebug(){console.log("Passed");}
 
             function findNearestStations(position) {
@@ -515,10 +188,8 @@
             }
 
 
-            
-            
             google.maps.event.addListenerOnce(map, 'idle', () => {
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('maploading').style.display = 'none';
             });
             
         };
@@ -530,7 +201,7 @@
 
 <body onload="initMap()">
     {# If possible, please keep the html id and CSS like this #}  
-    <div class="loading" id="loading">
+    <div class="loading" id="maploading">
         <div class="spinner"></div>
     </div>
     <div id="side-bar">
