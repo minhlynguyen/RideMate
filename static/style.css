@@ -229,12 +229,12 @@ input:focus-visible {
 
 /* Change background color of buttons on hover */
 .tab button:hover #default-button:hover{
-    border-bottom: #33CCCC 2px solid;
+    border-bottom: #FF4500 2px solid;
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-    border-bottom: #33CCCC 2px solid;
+    border-bottom: #FF4500 2px solid;
 }
 
 /* Style the tab content */
