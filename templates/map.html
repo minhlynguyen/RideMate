@@ -229,6 +229,46 @@
                         var dayChart = new google.visualization.ComboChart(document.getElementById('daily-average'));
                         dayChart.draw(dayData, options);
                         })
+
+                    /* Show the Prediction Result*/
+                    //Get the result of modle: station availability prediction 
+                    async function getPredicData() {
+                            const url_predict = '/predict_bikes/'+markerData.number;
+                            const response_predict = await fetch(url_predict);
+                            const data_predict  = await response_predict.json();
+                            return data_predict;
+                    }
+
+                    function search(searchTerm, data) {
+                        return data[parseInt(searchTerm)];
+                    }
+
+                    document.getElementById('search-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+
+                        const searchTerm = document.getElementById('search_term').value;
+                        const data = await getPredicData();
+                        const result = search(searchTerm,data);
+                        let resultHTML = '';
+
+                        if (result) {
+                            resultHTML = `
+                            <div>
+                                <h1><i class="material-icons" title="Available Bikes">pedal_bike</i>${result}</h1>
+                            </div>
+                            `;
+
+                        } else {
+                            resultHTML = '<p>No results found.</p>';
+                        }
+
+                        document.getElementById('search-results').innerHTML = resultHTML;
+                        });
+
+
+
+
+
                     }
 
 
@@ -342,17 +382,7 @@
                     
                     nearestStationsDiv.appendChild(stationDiv);
                 });
-            }
-
-
-            
-            
-            google.maps.event.addListenerOnce(map, 'idle', () => {
-                document.getElementById('loading').style.display = 'none';
-            });
-            
-        };
-
+            };
         
 
     </script>
