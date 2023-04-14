@@ -48,7 +48,6 @@ def index():
     query = 'SELECT * FROM station_update'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
-<<<<<<< HEAD
     weather_station = {}
 
     # Fetch the latest available bikes data
@@ -56,8 +55,6 @@ def index():
     availability_data = engine.connect().execute(
         text(availability_query)).fetchall() 
     availability_dict = {item[0]: item[1] for item in availability_data}
-=======
->>>>>>> main
 
     # Set up the markers
     markers = []
