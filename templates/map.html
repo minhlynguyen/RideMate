@@ -27,6 +27,9 @@
 
             var markers = {{ markers| tojson }};
             console.log(markers);  // Print the markers array in the console
+            
+            var mapMarkers = [];
+
 
             for (var i = 0; i < markers.length; i++) {
                 var marker = markers[i];
@@ -35,11 +38,12 @@
                     title: marker.title,
                     map: map
                 });
+                // Add the new marker to the mapMarkers array
+                mapMarkers.push(newMarker);
                 // Add the event listeners to each marker
                 attachInfoWindow(newMarker, map, marker);
             }
-
-            var availability_data = {{ availability| tojson }};
+            
 
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
@@ -66,10 +70,11 @@
                     document.getElementById('close-icon-right').style.display = 'block';
                     // Showing station average chart
                     google.charts.load('current', {'packages':['corechart']});
-                    google.charts.setOnLoadCallback(drawChart);
+                    google.charts.setOnLoadCallback(drawDaily);
                     google.charts.setOnLoadCallback(drawTemperature);
 
                     // Functions to draw station average chart    
+<<<<<<< HEAD
                     async function getData() {
                         const url = '/availability/daily/'+markerData.number;
                         const response = await fetch(url);
@@ -237,6 +242,8 @@
 
 
 
+=======
+>>>>>>> main
                     // Make a request to the Open Meteo API to get the weather
                     var weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude="+markerData.position.lat+
                         "&longitude="+markerData.position.lng+
@@ -327,7 +334,8 @@
                                             hours: {format: ['HH:mm', 'ha']},
                                             },
                                         color: '#fff'
-                                    }
+                                    },
+                                    baselineColor:'#fff'
                                 },
                                 vAxis: {
                                     minValue: 0,
@@ -339,7 +347,7 @@
                                 height:150,
                                 legend: 'none',
                                 series: {
-                                    0: { color: '#33cccc' }
+                                    0: { color: '#FF4500' }
                                 }
                             };
 
@@ -354,6 +362,46 @@
                             windChart.draw(windData, options);
                         });                         
                     } 
+
+                    function drawDaily(){
+                        url = "/available/"+markerData.number;
+                        fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            var dayAverageData = [['Day of week', 'Average daily available bikes', 'Average daily free stands']];
+                            for (var i = 0; i < data.length; i++){
+                                var datapoint = [data[i]['day_name'],data[i]['avg_bikes'],data[i]['avg_stands']];
+                                dayAverageData.push(datapoint);
+                            }
+                            console.log(dayAverageData);                        
+                            var dayData = google.visualization.arrayToDataTable(dayAverageData);
+
+                            var options = {
+                                chartArea: {
+                                    width: '85%'
+                                },
+                                width: 350,
+                                height: 200,
+                                seriesType: 'bars',
+                                legend:{position: 'top', textStyle: {fontSize: 9} },
+                                series: {
+                                    0: { color: '#003fff'},
+                                    1: { color: '#00ffff' }        
+                                },
+                                vAxis: {
+                                    minValue: 0,
+                                    gridlines: {
+                                        color: '#fff'
+                                    }
+                                },
+                            };
+
+                        var dayChart = new google.visualization.ComboChart(document.getElementById('daily-average'));
+                        dayChart.draw(dayData, options);
+                        })
+                    }
+
+
                 });
                 var heatmapData = markers.map(function(marker) {
                     return {
@@ -365,6 +413,22 @@
                 var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatmapData,
                     dissipating: true,
+                    gradient: [
+                        "rgba(0, 255, 255, 0)", 
+                        "rgba(0, 255, 255, 1)", 
+                        "rgba(0, 191, 255, 1)", 
+                        "rgba(0, 127, 255, 1)", 
+                        "rgba(0, 63, 255, 1)", 
+                        "rgba(0, 0, 255, 1)",
+                        "rgba(0, 0, 223, 1)",
+                        "rgba(0, 0, 191, 1)",
+                        "rgba(0, 0, 159, 1)",
+                        "rgba(0, 0, 127, 1)",
+                        "rgba(63, 0, 91, 1)",
+                        "rgba(127, 0, 63, 1)",
+                        "rgba(191, 0, 31, 1)",
+                        "rgba(255, 0, 0, 1)",
+                    ],
                     maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
                     radius: 30, // Adjust the radius to change the appearance of the heatmap
                     opacity: 0.5,
@@ -394,7 +458,7 @@
                 }
             
                 // Show nearest stations
-                showNearestStations(place.geometry.location, availability_data);
+                showNearestStations(place.geometry.location);
                 document.getElementById('side-bar').style.display = 'block';
             });
         
@@ -422,7 +486,7 @@
                 return nearestStations;
             }
 
-            function showNearestStations(location, availability_data) {
+            function showNearestStations(location) {
                 let nearestStations = findNearestStations(location);
                 console.log(nearestStations); // log nearest stations to the console
                 let sidebar = document.getElementById("side-bar");
@@ -439,19 +503,20 @@
                         <p><i class="material-icons" title="Banking">${station.banking ? 'check_circle' : 'cancel'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
                     stationDiv.style.cursor = 'pointer';
                     stationDiv.addEventListener('click', () => {
-                        let marker = markers.find(m => m.number === station.number);
-                        let newMarker = new google.maps.Marker({
-                            position: marker.position,
-                            title: marker.title,
-                            map: map
-                        });
-                        newMarker.setAnimation(google.maps.Animation.BOUNCE);
-                        setTimeout(() => { newMarker.setAnimation(null); }, 750);
-                    });                    
+                        let marker = mapMarkers.find(m => m.title === station.title);
+                    
+                        // Make the existing marker bounce
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(() => { marker.setAnimation(null); }, 750);
+                    });
+                    
                     nearestStationsDiv.appendChild(stationDiv);
                 });
             }
 
+
+            
+            
             google.maps.event.addListenerOnce(map, 'idle', () => {
                 document.getElementById('loading').style.display = 'none';
             });
@@ -496,18 +561,17 @@
             </div>
             <div id="weather-hour">
                 <div class="tab">
-                    <button id="default-button" class="tablinks" onclick="openWeather(event, 'temperature-chart')">Temperature(&#8451;)</button>
+                    <button class="tablinks active" onclick="openWeather(event, 'temperature-chart')">Temperature(&#8451;)</button>
                     <button class="tablinks" onclick="openWeather(event, 'precipitation-chart')">Precipitation(%)</button>
                     <button class="tablinks" onclick="openWeather(event, 'wind-chart')">Windspeed(km/h)</button>
                 </div>
                 <div id="temperature-chart" class="tabcontent"></div>
                 <div id="precipitation-chart" class="tabcontent"></div>
                 <div id="wind-chart" class="tabcontent"></div>
+                
             </div>
             <div id="station-history">
-                <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
-                <canvas id="weekly-chart-bikes"></canvas>
-                <canvas id="weekly-chart-bike_stands"></canvas>
+                <div id="daily-average"></div>
             </div>
             <div id="station-prediction">
                 <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">my_location</i>Station Prediction</h3>
