@@ -3,7 +3,7 @@ import pickle
 import time
 import datetime
 import traceback
-
+import requests
 import googlemaps
 import numpy as np
 from flask import Flask, g, jsonify, render_template, request
@@ -44,16 +44,6 @@ def index():
     query = 'SELECT * FROM station_update'
     engine = get_db()
     stations = engine.connect().execute(text(query)).fetchall()
-<<<<<<< HEAD
-    weather_station = {}
-
-    # Fetch the latest available bikes data
-    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
-    availability_data = engine.connect().execute(
-        text(availability_query)).fetchall() 
-    availability_dict = {item[0]: item[1] for item in availability_data}
-=======
->>>>>>> main
 
     # Set up the markers
     markers = []
