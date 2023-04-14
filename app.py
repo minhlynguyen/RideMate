@@ -95,8 +95,8 @@ def get_stations():
         print(traceback.format_exc())
         return "error in get_stations", 404
 
-@app.route("/available/<int:station_id>")
-def get_station(station_id):
+@app.route("/daily/<int:station_id>")
+def get_daily(station_id):
     engine = get_db()
     data = []
     rows = engine.execute(
@@ -105,9 +105,18 @@ def get_station(station_id):
         data.append(dict(row))
     return jsonify(data)
 
-@app.route("/chart")
-def chart():
-    return render_template("chart.html")
+
+@app.route("/hourly/<int:station_id>")
+def get_hourly(station_id):
+    engine = get_db()
+    data = []
+    today = datetime.datetime.now()
+    day_of_week = today.strftime('%A')
+    rows = engine.execute(
+        "SELECT * from availability_hour where number = {} and day_name = '{}' order by hour".format(station_id,day_of_week))
+    for row in rows:
+        data.append(dict(row))
+    return jsonify(data)
 
 
 @app.route("/predict_bikes/<int:station_id>")
