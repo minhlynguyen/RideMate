@@ -116,7 +116,6 @@ input:focus-visible {
 }
 
 #nearest-stations {
-    padding: 1rem;
     font-size: 14px;
     color: #333;
     width: 100%;
@@ -140,13 +139,14 @@ input:focus-visible {
 }
 
 #nearest-stations h4 {
-    font-size: 16px;
+    width: 40%;
     font-weight: bold;
     margin: 0 1rem 0 0;
     flex-grow: 1;
 }
 
 #nearest-stations p {
+    width: 15%;
     margin: 0;
 }
 
