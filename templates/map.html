@@ -136,6 +136,7 @@
             
                 // Show nearest stations
                 showNearestStations(place.geometry.location);
+                document.getElementById('nearest-stations').style.padding = '1rem';
                 document.getElementById('side-bar').style.display = 'block';
             });
         
@@ -164,7 +165,7 @@
                 let nearestStations = findNearestStations(location);
                 console.log(nearestStations); // log nearest stations to the console
                 let sidebar = document.getElementById("side-bar");
-                sidebar.style.height = '70%';
+                sidebar.style.height = '500px';
                 document.getElementById('close-icon').style.display = 'block';
                 let nearestStationsDiv = document.getElementById("nearest-stations");
                 nearestStationsDiv.innerHTML = "<h3>Nearest Stations:</h3>";
@@ -173,8 +174,8 @@
                     stationDiv.innerHTML = `<h4>${station.title}</h4>
                         <p><i class="material-icons" title="Status">info</i>${station.status}</p>
                         <p><i class="material-icons" title="Available Bikes">directions_bike</i>${station.available_bikes}</p>
-                        <p><i class="material-icons" title="Available Stands">directions_walk</i>${station.bike_stands}</p>
-                        <p><i class="material-icons" title="Banking">${station.banking ? 'check_circle' : 'cancel'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
+                        <p><i class="material-icons" title="Available Stands">local_parking</i>${station.bike_stands}</p>
+                        <p><i class="material-icons" title="Banking">${station.banking ? 'credit_card' : 'credit_card'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
                     stationDiv.style.cursor = 'pointer';
                     stationDiv.addEventListener('click', () => {
                         let marker = mapMarkers.find(m => m.title === station.title);

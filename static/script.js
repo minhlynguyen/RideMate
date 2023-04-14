@@ -238,7 +238,8 @@ function drawHourly(station){
 
             },
             hAxis:{
-                baselineColor: 'transparent'
+                baselineColor: 'transparent',
+                title: 'Hour of day'
             }
         };
 

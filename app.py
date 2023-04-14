@@ -43,24 +43,27 @@ def index():
     # Fetch the station data from the MySQL database
     query = 'SELECT * FROM station_update'
     engine = get_db()
-    stations = engine.connect().execute(text(query)).fetchall()
+    try:
+        stations = engine.connect().execute(text(query)).fetchall()
 
-    # Set up the markers
-    markers = []
-    for station in stations:
-        marker = {
-            'number': station[0],
-            'position': {'lat': station[2], 'lng': station[3]},
-            'title': station[1],
-            'status': station[8],
-            'bike_stands': station[7],
-            'available_bikes': station[6]
-        }
-        markers.append(marker)
+        # Set up the markers
+        markers = []
+        for station in stations:
+            marker = {
+                'number': station[0],
+                'position': {'lat': station[2], 'lng': station[3]},
+                'title': station[1],
+                'status': station[8],
+                'bike_stands': station[7],
+                'available_bikes': station[6]
+            }
+            markers.append(marker)
 
-    # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
-
+        # Render the template with API key, markers, and specified lat and lng
+        return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
+    except:
+        print(traceback.format_exc())
+        return "error in index", 404
 
 @app.route('/data')
 def station_data():
