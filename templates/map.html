@@ -70,72 +70,10 @@
                     document.getElementById('close-icon-right').style.display = 'block';
                     // Showing station average chart
                     google.charts.load('current', {'packages':['corechart']});
-                    google.charts.setOnLoadCallback(drawChart);
+                    google.charts.setOnLoadCallback(drawDaily);
                     google.charts.setOnLoadCallback(drawTemperature);
 
                     // Functions to draw station average chart    
-                    async function getData() {
-                        const url = '/availability/daily/'+markerData.number;
-                        const response = await fetch(url);
-                        const { data } = await response.json();
-                        console.log(JSON.parse(data));
-                        return JSON.parse(data);
-                    }
-
-                    async function drawChart() {
-                        const data = await getData();
-                        const weeklyData_bikes = calculateWeeklyAverage_bikes(data);
-                        const weeklyData_bike_stands = calculateWeeklyAverage_bike_stands(data);
-      
-                        const ctx = document.getElementById('weekly-chart-bikes');
-                        const chart = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bikes',
-                                    backgroundColor: 'rgba(255, 26, 104, 0.2)',
-                                    borderColor: 'rgba(255, 26, 104, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bikes.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-
-                        const ctx2 = document.getElementById('weekly-chart-bike_stands');
-                        const chart2 = new Chart(ctx2, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                                datasets: [{
-                                    label: 'Average Daily Available Bike Stands',
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1,
-                                    data: weeklyData_bike_stands.flat(),
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                        beginAtZero: true,
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-                    };
-
                     // Make a request to the Open Meteo API to get the weather
                     var weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude="+markerData.position.lat+
                         "&longitude="+markerData.position.lng+
@@ -222,7 +160,8 @@
                                             hours: {format: ['HH:mm', 'ha']},
                                             },
                                         color: '#fff'
-                                    }
+                                    },
+                                    baselineColor:'#fff'
                                 },
                                 vAxis: {
                                     minValue: 0,
@@ -234,7 +173,7 @@
                                 height:150,
                                 legend: 'none',
                                 series: {
-                                    0: { color: '#33cccc' }
+                                    0: { color: '#FF4500' }
                                 }
                             };
 
@@ -249,6 +188,46 @@
                             windChart.draw(windData, options);
                         });                         
                     } 
+
+                    function drawDaily(){
+                        url = "/available/"+markerData.number;
+                        fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            var dayAverageData = [['Day of week', 'Average daily available bikes', 'Average daily free stands']];
+                            for (var i = 0; i < data.length; i++){
+                                var datapoint = [data[i]['day_name'],data[i]['avg_bikes'],data[i]['avg_stands']];
+                                dayAverageData.push(datapoint);
+                            }
+                            console.log(dayAverageData);                        
+                            var dayData = google.visualization.arrayToDataTable(dayAverageData);
+
+                            var options = {
+                                chartArea: {
+                                    width: '85%'
+                                },
+                                width: 350,
+                                height: 200,
+                                seriesType: 'bars',
+                                legend:{position: 'top', textStyle: {fontSize: 9} },
+                                series: {
+                                    0: { color: '#003fff'},
+                                    1: { color: '#00ffff' }        
+                                },
+                                vAxis: {
+                                    minValue: 0,
+                                    gridlines: {
+                                        color: '#fff'
+                                    }
+                                },
+                            };
+
+                        var dayChart = new google.visualization.ComboChart(document.getElementById('daily-average'));
+                        dayChart.draw(dayData, options);
+                        })
+                    }
+
+
                 });
                 var heatmapData = markers.map(function(marker) {
                     return {
@@ -260,6 +239,22 @@
                 var heatmap = new google.maps.visualization.HeatmapLayer({
                     data: heatmapData,
                     dissipating: true,
+                    gradient: [
+                        "rgba(0, 255, 255, 0)", 
+                        "rgba(0, 255, 255, 1)", 
+                        "rgba(0, 191, 255, 1)", 
+                        "rgba(0, 127, 255, 1)", 
+                        "rgba(0, 63, 255, 1)", 
+                        "rgba(0, 0, 255, 1)",
+                        "rgba(0, 0, 223, 1)",
+                        "rgba(0, 0, 191, 1)",
+                        "rgba(0, 0, 159, 1)",
+                        "rgba(0, 0, 127, 1)",
+                        "rgba(63, 0, 91, 1)",
+                        "rgba(127, 0, 63, 1)",
+                        "rgba(191, 0, 31, 1)",
+                        "rgba(255, 0, 0, 1)",
+                    ],
                     maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
                     radius: 30, // Adjust the radius to change the appearance of the heatmap
                     opacity: 0.5,
@@ -396,11 +391,10 @@
                 <div id="temperature-chart" class="tabcontent"></div>
                 <div id="precipitation-chart" class="tabcontent"></div>
                 <div id="wind-chart" class="tabcontent"></div>
+                
             </div>
             <div id="station-history">
-                <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">access_time</i>Station History</h3>
-                <canvas id="weekly-chart-bikes"></canvas>
-                <canvas id="weekly-chart-bike_stands"></canvas>
+                <div id="daily-average"></div>
             </div>
             <div id="station-prediction"></div>
         </div>

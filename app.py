@@ -111,6 +111,15 @@ def get_availability_daily(station_id):
         list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
     return daily
 
+@app.route("/available/<int:station_id>")
+def get_station(station_id):
+    engine = get_db()
+    data = []
+    rows = engine.execute(
+        "SELECT * from availability_day where number = {} order by day_no".format(station_id))
+    for row in rows:
+        data.append(dict(row))
+    return jsonify(data)
 
 @app.route("/chart")
 def chart():
