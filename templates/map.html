@@ -193,6 +193,9 @@
             });
             
         };
+
+        
+
     </script>
 </head>
 
@@ -241,7 +244,22 @@
             <div id="station-history">
                 <div id="daily-average"></div>
             </div>
-            <div id="station-prediction"></div>
+            <div id="station-prediction">
+                <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">my_location</i>Station Prediction</h3>
+                <form id="search-form">
+                    <label for="search_term">Select a time:</label>
+                    <select id="search_term" name="time">
+                        {% for i in range(24) %}
+                        <option value="{{ i }}">{{ "%02d:00" % i }}</option>
+                        {% endfor %}
+                    </select>
+                    <!-- <label for="search_term">Search hour:</label>
+                    <input type="number" id="search_term" min="1" max="24" required> -->
+                    <!-- <button type="submit">Available Bikes</button> -->
+                    <input type="submit" value="Available Bikes">
+                </form>
+                <div id="search-results"></div>
+            </div>
         </div>
     </div>
     <div id="map"></div>
