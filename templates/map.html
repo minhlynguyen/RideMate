@@ -146,6 +146,7 @@
                         return weeklyData.slice(1);
                     }
 
+
                     async function drawChart() {
                         const data = await getData();
                         const weeklyData_bikes = calculateWeeklyAverage_bikes(data);
@@ -199,6 +200,42 @@
                             }
                         });
                     };
+
+                    //Get the result of modle: station availability prediction 
+                    async function getPredicData() {
+                        const url_predict = '/predict_bikes/'+markerData.number;
+                        const response_predict = await fetch(url_predict);
+                        const data_predict  = await response_predict.json();
+                        return data_predict;
+                    }
+
+                    function search(searchTerm, data) {
+                        return data[parseInt(searchTerm)];
+                    }
+
+                    document.getElementById('search-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+
+                        const searchTerm = document.getElementById('search_term').value;
+                        const data = await getPredicData();
+                        const result = search(searchTerm,data);
+                        let resultHTML = '';
+
+                        if (result) {
+                            resultHTML = `
+                            <div>
+                                <h1><i class="material-icons" title="Available Bikes">pedal_bike</i>${result}</h1>
+                            </div>
+                            `;
+
+                        } else {
+                            resultHTML = '<p>No results found.</p>';
+                        }
+
+                        document.getElementById('search-results').innerHTML = resultHTML;
+                        });
+
+
 
                     // Make a request to the Open Meteo API to get the weather
                     var weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude="+markerData.position.lat+
@@ -263,6 +300,10 @@
                                     windChartData.push(winddatapoint);
                                 }
                             }
+
+                            console.log(tempChartData);
+                            console.log(preciChartData);
+                            console.log(windChartData);
 
                             // Create google data tables from 3 data arrays
                             var tempData = google.visualization.arrayToDataTable(tempChartData);
@@ -416,6 +457,9 @@
             });
             
         };
+
+        
+
     </script>
 </head>
 
@@ -465,7 +509,22 @@
                 <canvas id="weekly-chart-bikes"></canvas>
                 <canvas id="weekly-chart-bike_stands"></canvas>
             </div>
-            <div id="station-prediction"></div>
+            <div id="station-prediction">
+                <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">my_location</i>Station Prediction</h3>
+                <form id="search-form">
+                    <label for="search_term">Select a time:</label>
+                    <select id="search_term" name="time">
+                        {% for i in range(24) %}
+                        <option value="{{ i }}">{{ "%02d:00" % i }}</option>
+                        {% endfor %}
+                    </select>
+                    <!-- <label for="search_term">Search hour:</label>
+                    <input type="number" id="search_term" min="1" max="24" required> -->
+                    <!-- <button type="submit">Available Bikes</button> -->
+                    <input type="submit" value="Available Bikes">
+                </form>
+                <div id="search-results"></div>
+            </div>
         </div>
     </div>
     <div id="map"></div>
