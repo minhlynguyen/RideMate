@@ -1,14 +1,10 @@
-# import mysql.connector
 import functools
-import json
 import pickle
 import time
 import traceback
 
 import googlemaps
 import numpy as np
-import pandas as pd
-import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
 from sklearn.linear_model import LinearRegression
@@ -96,20 +92,6 @@ def get_stations():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-
-
-@app.route("/availability/daily/<int:station_id>")
-def get_availability_daily(station_id):
-    engine = get_db()
-    df = pd.read_sql_query(
-        "SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
-    df['last_update'] = pd.to_datetime(df.last_update, unit='s')
-    df.set_index('last_update', inplace=True)
-    res = df[['available_bikes', 'available_bike_stands']
-             ].resample('1d').mean()
-    daily = jsonify(data=json.dumps(
-        list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
-    return daily
 
 @app.route("/available/<int:station_id>")
 def get_station(station_id):

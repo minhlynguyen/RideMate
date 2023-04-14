@@ -191,6 +191,8 @@
 
                     function drawDaily(){
                         url = "/available/"+markerData.number;
+                        let loader = `<div id="load-chart"><div class="spinner"></div></div>`;
+                        document.getElementById('daily-average').innerHTML = loader;
                         fetch(url)
                         .then(response => response.json())
                         .then(data => {
@@ -341,10 +343,8 @@
             }
 
 
-            
-            
             google.maps.event.addListenerOnce(map, 'idle', () => {
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('maploading').style.display = 'none';
             });
             
         };
@@ -353,7 +353,7 @@
 
 <body onload="initMap()">
     {# If possible, please keep the html id and CSS like this #}  
-    <div class="loading" id="loading">
+    <div class="loading" id="maploading">
         <div class="spinner"></div>
     </div>
     <div id="side-bar">
