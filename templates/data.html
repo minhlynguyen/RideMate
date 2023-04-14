@@ -92,6 +92,9 @@
             <option value="name" {% if request.args.get('filter')=='name' %}selected{% endif %}>Station Name</option>
         </select>
         <button type="submit">Search</button>
+        {% if selected_time is defined %}
+        <p>You selected: {{ selected_time }}</p>
+        {% endif %}
     </form>
     <table>
         <thead>
