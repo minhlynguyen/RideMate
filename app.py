@@ -1,15 +1,11 @@
-# import mysql.connector
 import functools
-import json
 import pickle
 import time
 import datetime
 import traceback
-
+import requests
 import googlemaps
 import numpy as np
-import pandas as pd
-import requests
 from flask import Flask, g, jsonify, render_template, request
 from flask_googlemaps import GoogleMaps
 from sklearn.linear_model import LinearRegression
@@ -47,31 +43,27 @@ def index():
     # Fetch the station data from the MySQL database
     query = 'SELECT * FROM station_update'
     engine = get_db()
-    stations = engine.connect().execute(text(query)).fetchall()
-    weather_station = {}
+    try:
+        stations = engine.connect().execute(text(query)).fetchall()
 
-    # Fetch the latest available bikes data
-    availability_query = 'SELECT number, available_bikes FROM availability ORDER BY last_update DESC'
-    availability_data = engine.connect().execute(
-        text(availability_query)).fetchall() 
-    availability_dict = {item[0]: item[1] for item in availability_data}
+        # Set up the markers
+        markers = []
+        for station in stations:
+            marker = {
+                'number': station[0],
+                'position': {'lat': station[2], 'lng': station[3]},
+                'title': station[1],
+                'status': station[8],
+                'bike_stands': station[7],
+                'available_bikes': station[6]
+            }
+            markers.append(marker)
 
-    # Set up the markers
-    markers = []
-    for station in stations:
-        marker = {
-            'number': station[0],
-            'position': {'lat': station[2], 'lng': station[3]},
-            'title': station[1],
-            'status': station[8],
-            'bike_stands': station[7],
-            'available_bikes': station[6]
-        }
-        markers.append(marker)
-
-    # Render the template with API key, markers, and specified lat and lng
-    return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
-
+        # Render the template with API key, markers, and specified lat and lng
+        return render_template("map.html", api_key=config.MAP_KEY, markers=markers, lat=lat, lng=lng)
+    except:
+        print(traceback.format_exc())
+        return "error in index", 404
 
 @app.route('/data')
 def station_data():
@@ -106,22 +98,8 @@ def get_stations():
         print(traceback.format_exc())
         return "error in get_stations", 404
 
-
-@app.route("/availability/daily/<int:station_id>")
-def get_availability_daily(station_id):
-    engine = get_db()
-    df = pd.read_sql_query(
-        "SELECT * from availability where number = %(number)s", engine, params={"number": station_id})
-    df['last_update'] = pd.to_datetime(df.last_update, unit='s')
-    df.set_index('last_update', inplace=True)
-    res = df[['available_bikes', 'available_bike_stands']
-             ].resample('1d').mean()
-    daily = jsonify(data=json.dumps(
-        list(zip(map(lambda x: x.isoformat(), res.index), res.values.tolist()))))
-    return daily
-
-@app.route("/available/<int:station_id>")
-def get_station(station_id):
+@app.route("/daily/<int:station_id>")
+def get_daily(station_id):
     engine = get_db()
     data = []
     rows = engine.execute(
@@ -130,9 +108,18 @@ def get_station(station_id):
         data.append(dict(row))
     return jsonify(data)
 
-@app.route("/chart")
-def chart():
-    return render_template("chart.html")
+
+@app.route("/hourly/<int:station_id>")
+def get_hourly(station_id):
+    engine = get_db()
+    data = []
+    today = datetime.datetime.now()
+    day_of_week = today.strftime('%A')
+    rows = engine.execute(
+        "SELECT * from availability_hour where number = {} and day_name = '{}' order by hour".format(station_id,day_of_week))
+    for row in rows:
+        data.append(dict(row))
+    return jsonify(data)
 
 
 @app.route("/predict_bikes/<int:station_id>")

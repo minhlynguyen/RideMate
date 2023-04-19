@@ -116,7 +116,6 @@ input:focus-visible {
 }
 
 #nearest-stations {
-    padding: 1rem;
     font-size: 14px;
     color: #333;
     width: 100%;
@@ -140,13 +139,14 @@ input:focus-visible {
 }
 
 #nearest-stations h4 {
-    font-size: 16px;
+    width: 40%;
     font-weight: bold;
     margin: 0 1rem 0 0;
     flex-grow: 1;
 }
 
 #nearest-stations p {
+    width: 15%;
     margin: 0;
 }
 
@@ -171,8 +171,8 @@ input:focus-visible {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #3498db;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
 }
 
@@ -210,7 +210,7 @@ input:focus-visible {
 }
 
 /* Style the tab */
-.tab {
+.tab .tabchart{
     overflow: hidden;
 }
 
@@ -227,14 +227,36 @@ input:focus-visible {
     font: 12px Roboto, Arial, sans-serif;
 }
 
+.tabchart button {
+    background-color: inherit;
+    float: left;
+    border: white;
+    outline: none;
+    cursor: pointer;
+    padding: 3px 0px;
+    margin: 3px 5px;
+    transition: 0.05s;
+    font: 12px Roboto, Arial, sans-serif;
+}
+
 /* Change background color of buttons on hover */
 .tab button:hover #default-button:hover{
     border-bottom: #FF4500 2px solid;
 }
 
+.tabchart button:hover #default-button:hover{
+    border-bottom: #33cccc 2px solid;
+}
+
+
 /* Create an active/current tablink class */
 .tab button.active {
     border-bottom: #FF4500 2px solid;
+}
+
+/* Create an active/current tablink class */
+.tabchart button.active {
+    border-bottom: #33cccc 2px solid;
 }
 
 /* Style the tab content */
@@ -250,12 +272,26 @@ input:focus-visible {
     width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
-#weekly-chart-bike, #weeky-chart-bike_stands{
-    display: block;
-    height: 175px;
-    width: 300px;
+.average-chart{
+    width: 100%;
+    display: none;
+    justify-content: center;
+    height: 200px;
+}
+
+#daily-average{
+    display: flex;
+}
+
+.load-chart{
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);;
 }
 
 #close-side-right {
