@@ -79,40 +79,41 @@
                     google.charts.setOnLoadCallback(drawHourly(markerData.number));
                     google.charts.setOnLoadCallback(drawTemperature(markerData.position.lat,markerData.position.lng));
                 });
-
-                var heatmapData = markers.map(function(marker) {
-                    return {
-                        location: new google.maps.LatLng(marker.position.lat, marker.position.lng),
-                        weight: marker.available_bikes
-                    };
-                });
-            
-                var heatmap = new google.maps.visualization.HeatmapLayer({
-                    data: heatmapData,
-                    dissipating: true,
-                    gradient: [
-                        "rgba(0, 255, 255, 0)", 
-                        "rgba(0, 255, 255, 0.5)", 
-                        "rgba(0, 191, 255, 0.5)", 
-                        "rgba(0, 127, 255, 0.5)", 
-                        "rgba(0, 63, 255, 0.5)", 
-                        "rgba(0, 0, 255, 0.5)",
-                        "rgba(0, 0, 223, 0.5)",
-                        "rgba(0, 0, 191, 0.5)",
-                        "rgba(0, 0, 159, 0.5)",
-                        "rgba(0, 0, 127, 0.5)",
-                        "rgba(63, 0, 91, 0.5)",
-                        "rgba(127, 0, 63, 0.5)",
-                        "rgba(191, 0, 31, 0.5)",
-                        "rgba(255, 0, 0, 0.5)",
-                    ],
-                    maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
-                    radius: 30, // Adjust the radius to change the appearance of the heatmap
-                    //opacity: 0.5,
-                });
-            
-                heatmap.setMap(map);
             }
+            
+            var heatmapData = markers.map(function(marker) {
+                return {
+                    location: new google.maps.LatLng(marker.position.lat,marker.position.lng),
+                    weight: marker.available_bikes
+                };
+            });
+            console.log(heatmapData);
+        
+            var heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatmapData,
+                dissipating: true,
+                gradient: [
+                    "rgba(0, 255, 255, 0)", 
+                    "rgba(0, 255, 255, 1)", 
+                    "rgba(0, 191, 255, 1)", 
+                    "rgba(0, 127, 255, 1)", 
+                    "rgba(0, 63, 255, 1)", 
+                    "rgba(0, 0, 255, 1)",
+                    "rgba(0, 0, 223, 1)",
+                    "rgba(0, 0, 191, 1)",
+                    "rgba(0, 0, 159, 1)",
+                    "rgba(0, 0, 127, 1)",
+                    "rgba(63, 0, 91, 1)",
+                    "rgba(127, 0, 63, 1)",
+                    "rgba(191, 0, 31, 1)",
+                    "rgba(255, 0, 0, 1)",
+                ],
+                maxIntensity: 30, // Change this value according to the highest number of available bikes at your stations
+                radius: 30, // Adjust the radius to change the appearance of the heatmap
+            });
+        
+            heatmap.setMap(map);
+            
 
             const input = document.getElementById("pac-input");            
 
@@ -195,9 +196,6 @@
             });
             
         };
-
-        
-
     </script>
 </head>
 
