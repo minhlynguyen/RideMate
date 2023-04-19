@@ -48,7 +48,7 @@
 
             function attachInfoWindow(marker, map, markerData) {
                 var infoWindow = new google.maps.InfoWindow({
-                    content: '<div><strong>' + markerData.title + '</strong>' +
+                    content: '<div><strong>' + "No." + markerData.number + " " + markerData.title + '</strong>' +
                         '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
                         '<div>Status: ' + markerData.status + '</div>' +
                         '<div>Available stands: ' + markerData.bike_stands + '</div>' +
@@ -78,6 +78,41 @@
                     google.charts.setOnLoadCallback(drawDaily(markerData.number));
                     google.charts.setOnLoadCallback(drawHourly(markerData.number));
                     google.charts.setOnLoadCallback(drawTemperature(markerData.position.lat,markerData.position.lng));
+                    
+                    //Get the result of modle: station availability prediction 
+                async function getPredicData() {
+                            const url_predict = '/predict_bikes/'+markerData.number;
+                            const response_predict = await fetch(url_predict);
+                            const data_predict  = await response_predict.json();
+                            return data_predict;
+                        }
+                function search(searchTerm, data) {
+                    return data[parseInt(searchTerm)];
+                }
+
+                document.getElementById('search-form').addEventListener('submit', async function(event) {
+                            event.preventDefault();
+
+                            const searchTerm = document.getElementById('search_term').value;
+                            const data = await getPredicData();
+                            const result = search(searchTerm,data);
+                            let resultHTML = '';
+
+                            if (result) {
+                                resultHTML = `
+                                <div>
+                                    <h1><i class="material-icons" title="Available Bikes">pedal_bike</i>${result}</h1>
+                                </div>
+                                `;
+                            } else {
+                                resultHTML = '<p>No results found.</p>';
+                            }
+
+                            document.getElementById('search-results').innerHTML = resultHTML;
+                            });
+                
+                
+                
                 });
 
                 var heatmapData = markers.map(function(marker) {
@@ -112,6 +147,9 @@
                 });
             
                 heatmap.setMap(map);
+
+                
+
             }
 
             const input = document.getElementById("pac-input");            
@@ -188,12 +226,12 @@
                     nearestStationsDiv.appendChild(stationDiv);
                 });
             }
-
+            
 
             
             
             google.maps.event.addListenerOnce(map, 'idle', () => {
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('maploading').style.display = 'none';
             });
             
         };
@@ -257,16 +295,12 @@
                 <h3 class="sidebar-label"><i class="sidebar-icon clock material-icons">my_location</i>Station Prediction</h3>
                 <form id="search-form">
                     <label for="search_term">Select a time:</label>
-                    <select id="search_term" name="time">
+                    <select id="search_term" name="time" placeholder="Enter a location">
                         {% for i in range(24) %}
                         <option value="{{ i }}">{{ "%02d:00" % i }}</option>
                         {% endfor %}
                     </select>
-                    <!-- <label for="search_term">Search hour:</label>
-                    <input type="number" id="search_term" min="1" max="24" required> -->
-                    <!-- <button type="submit">Available Bikes</button> -->
-                    <input type="submit" value="Available Bikes">
-                </form>
+                    <input type="submit" value="Available Bikes"></form>
                 <div id="search-results"></div>
             </div>
         </div>
