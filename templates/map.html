@@ -51,6 +51,8 @@
             
 
             function attachInfoWindow(marker, map, markerData) {
+                // const url_predict = '/predict_bikes/'+markerData.number
+                // <form action=url_predict method='post'>
                 var infoWindow = new google.maps.InfoWindow({
                     content: '<div><strong>' + "No." + markerData.number + " " + markerData.title + '</strong>' +
                         '<div><i class="wi wi-wmo4680-' + markerData.weathercode + '"></i></div>' +
@@ -241,6 +243,7 @@
 </head>
 
 <body onload="initMap()">
+
     {# If possible, please keep the html id and CSS like this #}  
     <div class="loading" id="maploading">
         <div class="spinner"></div>

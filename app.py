@@ -1,4 +1,5 @@
 import functools
+import os
 import pickle
 import time
 import datetime
@@ -121,11 +122,15 @@ def get_hourly(station_id):
         data.append(dict(row))
     return jsonify(data)
 
-
+file_dir = '/home/ubuntu/comp30830/'
+file_path = os.path.join(file_dir, 'models_bikes')
 @app.route("/predict_bikes/<int:station_id>")
 def predict_id(station_id):
-    filename = 'models_bikes/'+str(station_id)+'.pkl'
+    # filename = 'models_bikes/'+str(station_id)+'.pkl'
+    # file_path = os.path.join(file_dir, station_id,'.pkl')
+    filename = '/home/ubuntu/comp30830/models_bikes/'+str(station_id)+'.pkl'
     with open(filename, 'rb') as handle:
+    # with open(file_path, 'rb') as handle:
         model = pickle.load(handle)
     
     for i in get_stations().json:
@@ -149,7 +154,8 @@ def predict_id(station_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
 
 # Testing decorators:
 
