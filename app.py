@@ -66,21 +66,6 @@ def index():
         print(traceback.format_exc())
         return "error in index", 404
 
-@app.route('/data')
-def station_data():
-    engine = get_db()
-    query = 'SELECT * FROM station'
-    data = engine.connectstation_data().execute(text(query)).fetchall()
-    query = request.args.get('query')
-    filter_criteria = request.args.get('filter')
-    if query and filter_criteria:
-        query = f"SELECT * FROM station WHERE {filter_criteria} LIKE '%{query}%'"
-        search_results = engine.connect().execute(text(query)).fetchall()
-        return render_template('data.html', search_results=search_results)
-    else:
-        return render_template('data.html')
-
-
 @app.route("/stations")
 @functools.lru_cache(maxsize=128)
 def get_stations():
@@ -122,13 +107,13 @@ def get_hourly(station_id):
         data.append(dict(row))
     return jsonify(data)
 
-file_dir = '/home/ubuntu/comp30830/'
-file_path = os.path.join(file_dir, 'models_bikes')
+# file_dir = '/home/ubuntu/comp30830/'
+# file_path = os.path.join(file_dir, 'models_bikes')
 @app.route("/predict_bikes/<int:station_id>")
 def predict_id(station_id):
     # filename = 'models_bikes/'+str(station_id)+'.pkl'
     # file_path = os.path.join(file_dir, station_id,'.pkl')
-    filename = '/home/ubuntu/comp30830/models_bikes/'+str(station_id)+'.pkl'
+    filename = './models_bikes/'+str(station_id)+'.pkl'
     with open(filename, 'rb') as handle:
     # with open(file_path, 'rb') as handle:
         model = pickle.load(handle)
