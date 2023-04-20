@@ -36,6 +36,10 @@
                 var marker = markers[i];
                 var newMarker = new google.maps.Marker({
                     position: marker.position,
+                    icon: {
+                        url: 'https://img.icons8.com/color/48/null/bicycle.png',
+                        scaledSize: new google.maps.Size(35, 35),
+                    },
                     title: marker.title,
                     icon: {
                         url: 'http://maps.google.com/mapfiles/ms/icons/bike.png',
