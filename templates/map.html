@@ -163,15 +163,13 @@
                     return;
                 }
             
-                if (place.geometry.viewport) {
+             
                     map.fitBounds(place.geometry.viewport);
-                } else {
-                    map.setCenter(place.geometry.location);
-                    map.setZoom(17);
-                }
+
+
             
                 // Show nearest stations
-                showNearestStations(place.geometry.location);
+                showNearestStations(place.geometry.location, map);
                 document.getElementById('nearest-stations').style.padding = '1rem';
                 document.getElementById('side-bar').style.display = 'block';
             });
@@ -197,7 +195,7 @@
                 return nearestStations;
             }
 
-            function showNearestStations(location) {
+            function showNearestStations(location, map) {
                 let nearestStations = findNearestStations(location);
                 console.log(nearestStations); // log nearest stations to the console
                 let sidebar = document.getElementById("side-bar");
@@ -214,11 +212,17 @@
                         <p><i class="material-icons" title="Banking">${station.banking ? 'credit_card' : 'credit_card'}</i>${station.banking ? 'Yes' : 'No'}</p>`;
                     stationDiv.style.cursor = 'pointer';
                     stationDiv.addEventListener('click', () => {
+
                         let marker = mapMarkers.find(m => m.title === station.title);
                     
                         // Make the existing marker bounce
                         marker.setAnimation(google.maps.Animation.BOUNCE);
                         setTimeout(() => { marker.setAnimation(null); }, 750);
+
+                        // Set the map to center at the station position
+                        console.log(station.position.lat);
+                        console.log(station.position.lng);
+                        map.setCenter({lat:station.position.lat, lng:station.position.lng});
                     });
                     
                     nearestStationsDiv.appendChild(stationDiv);
