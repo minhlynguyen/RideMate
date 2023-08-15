@@ -12,3 +12,4 @@ the aim of this project is to develop a web application to display occupancy and
 ## Usage
 ## Contributors
 ## License
+MIT
