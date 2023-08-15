@@ -17,4 +17,5 @@ USER = "minhly"
 PASSWORD = "22201371"
 
 # google map
-MAP_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
+# MAP_KEY = "AIzaSyC52j5KuFhqFUz3qfPc7s16bmfqRLb9wy8"
+MAP_KEY = "AIzaSyA3oiLQI-meAZav-Xm0UTqr2aoe9LZbChQ"
