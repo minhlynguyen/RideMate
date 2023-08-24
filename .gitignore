@@ -1,2 +1,7 @@
 config.py
 *.pyc
+static/.DS_Store
+__pycache__
+__pycache__
+__pycache__
+.DS_Store

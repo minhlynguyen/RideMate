@@ -12,7 +12,7 @@ The repository is for the Dublin bikes app. The website had to be shutdown LOW E
 <!-- ![avatar](static/RideMate.png) -->
 
 <p align="center">
-  <img width="929" alt="db_1" src="static/RideMate.png">
+  <img width="929" alt="db_1" src="static/complete_ui.png">
 </p>
 
 ### Features
