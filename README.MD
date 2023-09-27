@@ -1,12 +1,13 @@
-# RideMate version 1.0.
-This version of RideMate is the work of a team of 3.
-I have plan to make an upgraded version with better UI/UX and more complex features. 
+<img align="right" src="https://visitor-badge.laobi.icu/badge?page_id=salesp07.RideMate">
+
+## RideMate version 1.0
+This version of RideMate is to develop a web application to display occupance and weather infor mation for [Dublin Bikes](http://www.dublinbikes.ie).
 
 ## Introduction
-The repository is for the Dublin bikes app. The website had to be shutdown LOW EC2 balance
-- The project scrapped data from JCDecaux and open weather API to get data bikes data for 3 months.
-- The Scrapper ran in an AWS EC2 instance and stored data in an AWS RDS (MySQL)
-- An ML model was developed with data and deployed on a Flask instance
+The repository is for the Dublin bikes app. The website had to be shutdown LOW [AWS EC2](https://aws.amazon.com/pm/ec2/) balance
+- The project scrapped data from [JCDecauxAPI](https://developer.jcdecaux.com/#/home) and [OpenWeather API](https://openweathermap.org/api) to get data bikes data for 3 months.
+- The Scrapper ran in an [AWS EC2](https://aws.amazon.com/pm/ec2/) instance and stored data in an [AWS RDS](https://aws.amazon.com/rds/) ([MySQL](https://www.mysql.com/))
+- An ML model was developed with data and deployed on a [Flask](https://flask.palletsprojects.com/en/2.3.x/) instance
 
 ### This is Dublin Bikes a webapp for our DBbikes system. 
 <!-- ![avatar](static/RideMate.png) -->
@@ -44,6 +45,74 @@ When five nearest stations to the chosen location are shown, user can click on e
 </p>
 
 ## Installation
-## Usage
+1. Clone the repository to your local machine:
+
+```shell
+$ git clone https://github.com/minhlynguyen/ucd-se-ridemate.git
+```
+
+2. Navigate to the project directory:
+
+```
+$ cd ucd-se-ridemate
+```
+
+3. Create a virtual environment and activate it (if applicable):
+
+```
+# Using virtualenv
+virtualenv venv
+source venv/bin/activate
+
+# Using venv (Python 3.6+)
+python -m venv venv
+source venv/bin/activate
+```
+
+4. Install the required dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+5. Start the development server
+
+```
+flask run
+```
+
+6. Then open localhost:5000 in your browser to view the webpage
+
 ## Contributors
+
+<a href="https://github.com/minhlynguyen"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/minhlynguyen?v=4&h=60&w=60&fit=cover&mask=circle&maxage=7d"></a>
+[Ly M Nguyen](https://github.com/minhlynguyen)
+
+<a href="https://github.com/yuanindublin"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/yuanindublin?v=4&h=60&w=60&fit=cover&mask=circle&maxage=7d"></a>
+[Yingyuan Li](https://github.com/yuanindublin)
+
+<a href="https://github.com/Fei117117"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/Fei117117?v=4&h=60&w=60&fit=cover&mask=circle&maxage=7d"></a>
+[Fei Gao](https://github.com/Fei117117)
+
 ## License
+MIT License
+
+Copyright (c) 2023 Minh Ly Nguyen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
